@@ -8,6 +8,49 @@
 import SwiftUI
 import StoreKit
 
+func buy(mode: Int, user: UserStore) {
+    Products.store.requestProducts { _, products  in
+        guard let products = products else {
+            return
+        }
+       var productIndex = 0
+
+        switch mode {
+        case 0:
+            for i in 0..<3 where products[i].productIdentifier == Products.basicSub {
+                    productIndex = i
+            }
+        case 1:
+            for i in 0..<3 where products[i].productIdentifier == Products.goldSub {
+                    productIndex = i
+            }
+        case 2:
+            for i in 0..<3 where products[i].productIdentifier == Products.permanent {
+                    productIndex = i
+            }
+        default:
+            break
+        }
+
+        Products.store.buyProduct(products[productIndex]) {_, productId in
+
+            guard let productId = productId else {
+                return
+            }
+
+            if Products.store.isProductPurchased(productId) {
+                if productId == Products.permanent || productId == Products.goldSub {
+                    user.userHasGoldPremium = true
+                }
+                if productId == Products.basicSub {
+                    user.userHasBasicPremium = true
+                }
+            }
+        }
+    }
+
+}
+
 struct SpendenView: View {
     @EnvironmentObject var user: UserStore
     @State var mode = 0
@@ -29,10 +72,9 @@ struct SpendenView: View {
                             Image(systemName: "")
                         }
                     }.frame(width: screen.width, height: 50).onTapGesture {
-                        print("hi")
+
                         user.spendenClicked = false
                         user.siteOpened = 0
-                        print(user.siteOpened)
                         
                     }
                 }
@@ -155,60 +197,8 @@ struct SpendenView: View {
                                     }
                                     
                                 }.onTapGesture {
-                                    
-                                    Products.store.requestProducts { _, products  in
-                                        guard let products = products else {
-                                            return
-                                        }
-                                       var productIndex = 0
-                                        
-                                        if mode == 0 {
-                                            if products[0].productIdentifier == Products.basicSub {
-                                               productIndex = 0
-                                            }
-                                            
-                                            if products[1].productIdentifier == Products.basicSub {
-                                               productIndex = 1
-                                            }
-                                            if products[2].productIdentifier == Products.basicSub {
-                                               productIndex = 2
-                                            }
-                                        }
-                                        
-                                        if mode == 1 {
-                                            if products[0].productIdentifier == Products.goldSub {
-                                               productIndex = 0
-                                            }
-                                            
-                                            if products[1].productIdentifier == Products.goldSub {
-                                               productIndex = 1
-                                            }
-                                            if products[2].productIdentifier == Products.goldSub {
-                                               productIndex = 2
-                                            }
-                                        }
-                                        
-                                        Products.store.buyProduct(products[productIndex]) {_, productId in
-                                            
-                                            guard let productId = productId else {
-                                                return
-                                            }
-                                            
-                                            if Products.store.isProductPurchased(productId) {
-                                                if productId == Products.permanent || productId == Products.goldSub {
-                                                    user.premium = true
-                                                }
-                                                if productId == Products.basicSub {
-                                                    user.basicPremium = true
-                                                }
-                                                user.userHasBasicPremium = user.basicPremium ||
-                                                Products.store.isProductPurchased(Products.basicSub) ? true : false
-                                                user.userHasGoldPremium = user.premium ||
-                                                Products.store.isProductPurchased(Products.permanent) ||
-                                                Products.store.isProductPurchased(Products.goldSub) ? true : false
-                                            }
-                                        }
-                                    }
+                                    buy(mode: mode, user: user)
+
                                 }
                                     
                                 if mode == 1 {
@@ -230,43 +220,7 @@ struct SpendenView: View {
                                             
                                         }
                                     }.onTapGesture {
-                                        Products.store.requestProducts { _, products  in
-                                            guard let products = products else {
-                                                return
-                                            }
-                                           var productIndex = 0
-                                            if products[0].productIdentifier == Products.permanent {
-                                               productIndex = 0
-                                            }
-                                            
-                                            if products[1].productIdentifier == Products.permanent {
-                                               productIndex = 1
-                                            }
-                                            if products[2].productIdentifier == Products.permanent {
-                                               productIndex = 2
-                                            }
-                                            
-                                            Products.store.buyProduct(products[productIndex]) {_, productId in
-                                                
-                                                guard let productId = productId else {
-                                                    return
-                                                }
-                                                
-                                                if Products.store.isProductPurchased(productId) {
-                                                    if productId == Products.permanent || productId == Products.goldSub {
-                                                        user.premium = true
-                                                    }
-                                                    if productId == Products.basicSub {
-                                                        user.basicPremium = true
-                                                    }
-                                                    user.userHasBasicPremium = user.basicPremium ||
-                                                    Products.store.isProductPurchased(Products.basicSub) ? true : false
-                                                    user.userHasGoldPremium = user.premium ||
-                                                    Products.store.isProductPurchased(Products.permanent) ||
-                                                    Products.store.isProductPurchased(Products.goldSub) ? true : false
-                                                }
-                                            }
-                                        }
+                                        buy(mode: mode, user: user)
                                     }
                                 }
                                 Link(destination: URL(string: "https://415414.8b.io/privacyAndTerms.html")!, label: {
@@ -275,8 +229,7 @@ struct SpendenView: View {
                                 Text("Kauf wiederherstellen").font(.callout).underline().padding(.top, 5)
                                     .foregroundColor(.white).padding(.bottom, 20).onTapGesture {
                                     Products.store.restorePurchases()
-                                    if user.premium || Products.store.isProductPurchased(Products.permanent) ||
-                                        Products.store.isProductPurchased(Products.goldSub) || user.basicPremium ||
+                                    if Products.store.isProductPurchased(Products.permanent) || Products.store.isProductPurchased(Products.goldSub) ||
                                         Products.store.isProductPurchased(Products.basicSub) {
                                         user.spendenClicked = false
                                         user.simpleSuccess()
@@ -315,7 +268,7 @@ struct BuyButtonRectangle: View {
 }
 
 struct GoldPremiumView: View {
-    @Binding var selectedColor:Color
+    @Binding var selectedColor: Color
     var body: some View {
         VStack {
             Text("Premium-Bereich").font(.title).bold().padding(.top, 10)
@@ -476,45 +429,7 @@ struct BasicPremiumView: View {
 
                         }.onTapGesture {
 
-                            Products.store.requestProducts { _, products  in
-                                guard let products = products else {
-                                    return
-                                }
-                                var productIndex = 0
-
-                                if products[0].productIdentifier == Products.goldSub {
-                                    productIndex = 0
-                                }
-
-                                if products[1].productIdentifier == Products.goldSub {
-                                    productIndex = 1
-                                }
-                                if products[2].productIdentifier == Products.goldSub {
-                                    productIndex = 2
-                                }
-
-                                Products.store.buyProduct(products[productIndex]) {_, productId in
-
-                                    guard let productId = productId else {
-                                        return
-                                    }
-
-                                    if Products.store.isProductPurchased(productId) {
-                                        if productId == Products.permanent || productId == Products.goldSub {
-                                            user.premium = true
-                                        }
-                                        if productId == Products.basicSub {
-                                            user.basicPremium = true
-                                        }
-                                        user.userHasBasicPremium = user.basicPremium ||
-                                        Products.store.isProductPurchased(Products.basicSub) ? true : false
-                                        user.userHasGoldPremium = user.premium ||
-                                        Products.store.isProductPurchased(Products.permanent) ||
-                                        Products.store.isProductPurchased(Products.goldSub) ? true : false
-
-                                    }
-                                }
-                            }
+                          buy(mode: 1, user: user)
                         }
 
                         Text("oder").font(.callout).foregroundColor(.white).multilineTextAlignment(.center).padding(.horizontal, 10)
@@ -533,43 +448,7 @@ struct BasicPremiumView: View {
 
                             }
                         }.onTapGesture {
-                            Products.store.requestProducts { _, products  in
-                                guard let products = products else {
-                                    return
-                                }
-                                var productIndex = 0
-                                if products[0].productIdentifier == Products.permanent {
-                                    productIndex = 0
-                                }
-
-                                if products[1].productIdentifier == Products.permanent {
-                                    productIndex = 1
-                                }
-                                if products[2].productIdentifier == Products.permanent {
-                                    productIndex = 2
-                                }
-
-                                Products.store.buyProduct(products[productIndex]) {_, productId in
-
-                                    guard let productId = productId else {
-                                        return
-                                    }
-
-                                    if Products.store.isProductPurchased(productId) {
-                                        if productId == Products.permanent || productId == Products.goldSub {
-                                            user.premium = true
-                                        }
-                                        if productId == Products.basicSub {
-                                            user.basicPremium = true
-                                        }
-                                        user.userHasBasicPremium = user.basicPremium ||
-                                        Products.store.isProductPurchased(Products.basicSub) ? true : false
-                                        user.userHasGoldPremium = user.premium ||
-                                        Products.store.isProductPurchased(Products.permanent) ||
-                                        Products.store.isProductPurchased(Products.goldSub) ? true : false
-                                    }
-                                }
-                            }
+                            buy(mode: 2, user: user)
                         }
 
                         Link(destination: URL(string: "https://415414.8b.io/privacyAndTerms.html")!, label: {
@@ -578,8 +457,8 @@ struct BasicPremiumView: View {
                         Text("Kauf wiederherstellen").font(.callout).underline().padding(.top, 5)
                             .foregroundColor(.white).padding(.bottom, 20).onTapGesture {
                                 Products.store.restorePurchases()
-                                if user.premium || Products.store.isProductPurchased(Products.permanent) ||
-                                    Products.store.isProductPurchased(Products.goldSub) || user.basicPremium ||
+                                if Products.store.isProductPurchased(Products.permanent) ||
+                                    Products.store.isProductPurchased(Products.goldSub) ||
                                     Products.store.isProductPurchased(Products.basicSub) {
                                     user.spendenClicked = false
                                     user.simpleSuccess()

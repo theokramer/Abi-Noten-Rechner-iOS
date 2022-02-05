@@ -66,15 +66,9 @@ class UserStore: ObservableObject {
     }
     
     func checkForPremiumStatus() {
-        userHasBasicPremium = basicPremium || Products.store.isProductPurchased(Products.basicSub) ? true : false
-        userHasGoldPremium = premium || Products.store.isProductPurchased(Products.permanent) ||
+        userHasBasicPremium = Products.store.isProductPurchased(Products.basicSub) ? true : false
+        userHasGoldPremium = Products.store.isProductPurchased(Products.permanent) ||
         Products.store.isProductPurchased(Products.goldSub) ? true : false
-    }
-    
-    @Published var premium: Bool = defaults.bool(forKey: "premium") {
-        didSet {
-            defaults.set(premium, forKey: "premium")
-        }
     }
     
     func simpleSuccess() {
@@ -95,12 +89,6 @@ class UserStore: ObservableObject {
         let generator = UINotificationFeedbackGenerator()
         
             generator.notificationOccurred(.error)
-    }
-    
-    @Published var basicPremium: Bool = defaults.bool(forKey: "basicPremium") {
-        didSet {
-            defaults.set(basicPremium, forKey: "basicPremium")
-        }
     }
     
     @Published var blackText: Bool = defaults.bool(forKey: "blackText") {
@@ -315,7 +303,7 @@ extension UserDefaults {
           colorReturnded = color
         }
       } catch {
-        print("Error UserDefaults")
+
       }
     }
     return colorReturnded
@@ -328,7 +316,7 @@ extension UserDefaults {
         let data = try NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: false) as NSData?
         colorData = data
       } catch {
-        print("Error UserDefaults")
+        
       }
     }
     set(colorData, forKey: key)

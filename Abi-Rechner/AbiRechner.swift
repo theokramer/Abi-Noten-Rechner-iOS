@@ -46,7 +46,7 @@ struct AbiRechner: App {
                 
                 switch status {
                 case .notDetermined:
-                    print("not determined")
+
                     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
                         if success {
                             
@@ -55,7 +55,7 @@ struct AbiRechner: App {
                         }
                     }
                 case .restricted:
-                    print("restricted")
+
                     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
                         if success {
                            
@@ -64,7 +64,7 @@ struct AbiRechner: App {
                         }
                     }
                 case .denied:
-                    print("denied")
+
                     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
                         if success {
                           
@@ -73,7 +73,7 @@ struct AbiRechner: App {
                         }
                     }
                 case .authorized:
-                    print("Authorized")
+
                     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
                         if success {
                             sheduleNotificationHalbjahr()
@@ -100,40 +100,40 @@ struct AbiRechner: App {
             StartView(activeScene: $activeScene).accentColor(Color(selectedColor))
                 .environment(\.managedObjectContext, persistenceController.container.viewContext).environmentObject(UserStore()).onAppear {
                     if Products.store.isProductPurchased(Products.basicSub) {
-                        UserStore().basicPremium = true
+                        UserStore().userHasBasicPremium = true
                     } else {
-                        UserStore().basicPremium = false
+                        UserStore().userHasBasicPremium = false
                     }
                     
                     if Products.store.isProductPurchased(Products.goldSub) {
-                        UserStore().premium = true
+                        UserStore().userHasGoldPremium = true
                     } else {
-                        UserStore().premium = false
+                        UserStore().userHasGoldPremium = false
                     }
                 }
                 
         }.onChange(of: phase) { (newPhase) in
             switch newPhase {
             case .active :
-                print("App in active")
+
                 if shortcutItemToProcess?.localizedTitle == "Neu" {
                 activeScene = 0
-                    print("ActiveScene: \(activeScene)")
+
                 }
                 
                 if shortcutItemToProcess?.localizedTitle == "Bearbeiten" {
                 activeScene = 1
-                print("ActiveScene: \(activeScene)")
+
                 }
 
             case .inactive:
-                 print("App is inactive")
+                break
                 
             case .background:
-                print("App in Back ground")
+
                 addQuickActions() 
             @unknown default:
-                print("default")
+                break
             }
             
         }

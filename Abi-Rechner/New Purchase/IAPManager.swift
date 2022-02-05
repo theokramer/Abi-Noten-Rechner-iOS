@@ -15,11 +15,6 @@ public class IAPManager: NSObject {
     self.productIDs = productIDs
     self.purchasedProductIDs = productIDs.filter { productID in
       let purchased = UserDefaults.standard.bool(forKey: productID)
-      if purchased {
-        print("Previously purchased: \(productID)")
-      } else {
-        print("Not purchased: \(productID)")
-      }
         
       return purchased
     }
@@ -40,7 +35,6 @@ extension IAPManager {
 
   public func buyProduct(_ product: SKProduct, _ completionHandler: @escaping ProductPurchaseCompletionHandler) {
     productPurchaseCompletionHandler = completionHandler
-    print("Buying \(product.productIdentifier)...")
     let payment = SKPayment(product: product)
     SKPaymentQueue.default().add(payment)
   }
@@ -61,24 +55,19 @@ extension IAPManager {
 
 extension IAPManager: SKProductsRequestDelegate {
   public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
-    print("Loaded list of products...")
+
     let products = response.products
     guard !products.isEmpty else {
-      print("Product list is empty...!")
-      print("Did you configure the project and set up the IAP?")
+
       productsRequestCompletionHandler?(false, nil)
       return
     }
     productsRequestCompletionHandler?(true, products)
     clearRequestAndHandler()
-    for p in products {
-      print("Found product: \(p.productIdentifier) \(p.localizedTitle) \(p.price.floatValue)")
-    }
   }
 
   public func request(_ request: SKRequest, didFailWithError error: Error) {
-    print("Failed to load list of products.")
-    print("Error: \(error.localizedDescription)")
+
     productsRequestCompletionHandler?(false, nil)
     clearRequestAndHandler()
   }
@@ -113,24 +102,24 @@ extension IAPManager: SKPaymentTransactionObserver {
   }
 
   private func complete(transaction: SKPaymentTransaction) {
-    print("complete...")
+
     productPurchaseCompleted(identifier: transaction.payment.productIdentifier)
     SKPaymentQueue.default().finishTransaction(transaction)
   }
 
   private func restore(transaction: SKPaymentTransaction) {
     guard let productIdentifier = transaction.original?.payment.productIdentifier else { return }
-    print("restore... \(productIdentifier)")
+
     productPurchaseCompleted(identifier: productIdentifier)
     SKPaymentQueue.default().finishTransaction(transaction)
   }
 
   private func fail(transaction: SKPaymentTransaction) {
-    print("fail...")
+
     if let transactionError = transaction.error as NSError?,
       let localizedDescription = transaction.error?.localizedDescription,
         transactionError.code != SKError.paymentCancelled.rawValue {
-        print("Transaction Error: \(localizedDescription)")
+        print(localizedDescription)
       }
 
     productPurchaseCompletionHandler?(false, nil)

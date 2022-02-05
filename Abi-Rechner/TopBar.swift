@@ -12,52 +12,6 @@ struct TabletTopBar: View {
     @EnvironmentObject var user: UserStore
     @Environment(\.managedObjectContext) private var viewContext
     
-    func fetchAllSemesterNoten() -> [SemesternotenItem]? {
-        var semesternoten: [SemesternotenItem] = []
-        let semesternotenRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Semesternote")
-        do {
-            let results = try viewContext.fetch(semesternotenRequest)
-            if !results.isEmpty {
-                for i in results {
-                    if let result = i as? NSManagedObject {
-                        if result.value(forKey: "id") != nil {
-                            guard let thisID = result.value(forKey: "id") as? UUID else {
-                                return nil
-                            }
-                            guard let name = result.value(forKey: "name") as? String else {
-                                return nil
-                            }
-                            
-                            guard let semesterNote = result.value(forKey: "semesterNote") as? Double else {
-                                return nil
-                            }
-                            guard let semesterPunkte = result.value(forKey: "semesterPunkte") as? Double else {
-                                return nil
-                            }
-                            guard let date = result.value(forKey: "date") as? Date else {
-                                return nil
-                            }
-                            
-                            let semesternote = SemesternotenItem(id: thisID, name: name,
-                            semesterNote: semesterNote, semesterPunkte: semesterPunkte, date: date)
-                            semesternoten.append(semesternote)
-                        }
-
-                    }
-                }
-                semesternoten = semesternoten.sorted(by: {$0.date.compare($1.date) == .orderedDescending})
-            }
-            } catch {
-                print(error.localizedDescription)
-            }
-        if semesternoten.isEmpty {
-            return nil
-        } else {
-            return semesternoten
-        }
-
-    }
-    
     var body: some View {
         VStack {
             ZStack {

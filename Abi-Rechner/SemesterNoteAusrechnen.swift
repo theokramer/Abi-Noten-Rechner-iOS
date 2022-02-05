@@ -38,7 +38,7 @@ struct SemesterNoteAusrechnen: View {
                     user.showAd = true
                     hideKeyboard()
                     user.simpleSuccess()
-                    print("Hallo")
+
                     let note = Double(round(100*user.aktuelleNote)/100)
                     
                     if let userDefaults = UserDefaults(suiteName: "group.notenRechner.widgetcache") {
@@ -46,7 +46,6 @@ struct SemesterNoteAusrechnen: View {
                     }
                     
                     WidgetCenter.shared.reloadAllTimelines()
-                    print("Geschafft")
                     
                 }
                 
@@ -114,7 +113,6 @@ struct SemesterNoteAusrechnen: View {
             
         }
         if alarm == true {
-            print("huhu")
             return nil
         }
         punkteSchnitt /= count

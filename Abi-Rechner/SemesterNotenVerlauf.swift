@@ -33,7 +33,6 @@ struct SemesterNotenVerlauf: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @State var noteTeilenClicked = false
-    
     @State var abiSemesterNoten = [SemesternotenItem]()
     @State var shareNote = SemesternotenItem(id: UUID(), name: "", semesterNote: -1, semesterPunkte: 0.0, date: Date())
     @State var shareNoteEndnote = false
@@ -190,7 +189,7 @@ struct SemesterNotenVerlauf: View {
     func warnUserTrash(item: SemesternotenItem) {
         trashClicked = true
         actItem = item
-        print(trashClicked)
+
         user.simpleWarning()
     }
     
@@ -287,14 +286,14 @@ struct SemesterNotenVerlauf: View {
                             
                         }.foregroundColor(.white)
                         
-                    }.blur(radius: (user.premium || Products.store.isProductPurchased(Products.goldSub) ||
+                    }.blur(radius: (Products.store.isProductPurchased(Products.goldSub) ||
                                     Products.store.isProductPurchased(Products.permanent)) ? 0 : 7)
                     
                     Image(systemName: "lock").resizable().aspectRatio(contentMode: .fit).frame(width: 25)
-                        .opacity((user.premium || Products.store.isProductPurchased(Products.goldSub) ||
+                        .opacity((Products.store.isProductPurchased(Products.goldSub) ||
                                   Products.store.isProductPurchased(Products.permanent)) ? 0 : 1)
                 }.onTapGesture {
-                    if !(user.premium || Products.store.isProductPurchased(Products.goldSub) ||
+                    if !(Products.store.isProductPurchased(Products.goldSub) ||
                          Products.store.isProductPurchased(Products.permanent)) {
                         user.spendenClicked = true
                         user.siteOpened = 3
@@ -322,14 +321,14 @@ struct SemesterNotenVerlauf: View {
                             
                         }.foregroundColor(.white)
                         
-                    }.blur(radius: (user.premium || Products.store.isProductPurchased(Products.goldSub) ||
+                    }.blur(radius: (Products.store.isProductPurchased(Products.goldSub) ||
                                     Products.store.isProductPurchased(Products.permanent)) ? 0 : 7)
                     
                     Image(systemName: "lock").resizable().aspectRatio(contentMode: .fit).frame(width: 25)
-                        .opacity((user.premium || Products.store.isProductPurchased(Products.goldSub) ||
+                        .opacity((Products.store.isProductPurchased(Products.goldSub) ||
                                   Products.store.isProductPurchased(Products.permanent)) ? 0 : 1)
                 }.onTapGesture {
-                    if !(user.premium || Products.store.isProductPurchased(Products.goldSub) ||
+                    if !(Products.store.isProductPurchased(Products.goldSub) ||
                          Products.store.isProductPurchased(Products.permanent)) {
                         user.spendenClicked = true
                         user.siteOpened = 3
@@ -362,76 +361,12 @@ struct SemesterNotenVerlauf: View {
                 }
             
         }.sheet(isPresented: $noteTeilenClicked) {
-            VStack {
-                if !tablet {
-                    RoundedRectangle(cornerRadius: 4).frame(width: 37, height: 6).foregroundColor(.gray).padding(.top, 8).onTapGesture {
-                        noteTeilenClicked = false
-                        
-                    }
-                    Text("Note teilen").font(.title).bold().padding(.top, 10)
-                    Text("Wähle jetzt eine Note aus, die du teilen möchtest.").padding(.top).padding(.horizontal, 25)
-                        .multilineTextAlignment(.center).padding(.bottom, 20)
-                    
-                    ScrollView(showsIndicators: false) {
-                        if user.endNoteAbi != 0 {
-                            ZStack {
-                                if shareNoteEndnote {
-                                    RoundedRectangle(cornerRadius: 10).foregroundColor(.mainColor2)
-                                } else {
-                                    RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.5).foregroundColor(.mainColor2)
-                                }
-                                
-                                Text("Endnote: \(String(format: "%.2f", user.endNoteAbi))")
-                                    .foregroundColor(shareNoteEndnote ? .modeColor : .modeColorSwitch)
-                            }.frame(width: 200, height: 60).onTapGesture {
-                                if #available(iOS 15, *) {
-                                    shareNote = SemesternotenItem(id: UUID(), name: "Endnote",
-                                                                  semesterNote: user.endNoteAbi, semesterPunkte: user.endPunkteAbi, date: Date.now)
-                                } else {
-                                    // Fallback on earlier versions
-                                }
-                                shareNoteEndnote = true
-                            }
-                        }
-                        
-                        ForEach(user.semesterNoten, id: \.id) { item in
-                            ZStack {
-                                
-                                if shareNote.id == item.id {
-                                    RoundedRectangle(cornerRadius: 10).foregroundColor(.mainColor2)
-                                } else {
-                                    RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.5).foregroundColor(.mainColor2)
-                                }
-                                
-                                HStack {
-                                    Text(item.name)
-                                    Text("\(String(format: "%.2f", item.semesterNote))")
-                                    
-                                }.foregroundColor(shareNote.id == item.id ? .modeColor : .modeColorSwitch)
-                            }.frame(width: 200, height: 60).onTapGesture {
-                                shareNote = item
-                                shareNoteEndnote = false
-                            }
-                        }
-                    }
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10).foregroundColor(.mainColor2)
-                        Text("Teilen").foregroundColor(.modeColor).font(tablet ? .title : .headline)
-                    }.frame(width: tablet ? 280 : 150, height: tablet ? 80 : 50).onTapGesture {
-                        
-                        if shareNote.semesterNote != -1 {
-                            noteTeilenClicked = false
-                            openSHareWindow = true
-                        }
-                        
-                    }
-                }
-                    Spacer()
-                }
+            NoteTeilenView(noteTeilenClicked: $noteTeilenClicked, semesterNoten: user.semesterNoten,
+                           abiSemesterNoten: abiSemesterNoten, shareNote: $shareNote,
+                           shareNoteEndnote: $shareNoteEndnote, openSHareWindow: $openSHareWindow)
         }.onAppear {
-            print("Hi")
             user.semesterNoten = fetchAllSemesterNoten(viewContext: viewContext) ?? []
-            print(user.semesterNoten.count)
+
             if user.semesterNoten.count >= 4 {
                 for i in 0..<4 {
                     abiSemesterNoten.append(user.semesterNoten[i])
@@ -451,20 +386,6 @@ struct SemesterNotenVerlauf: View {
             }
             
         }
-//        .highPriorityGesture(DragGesture().onEnded({
-//            if handleSwipe(translation: $0.translation.width) {
-//                if user.itemClicked && user.NachSpeichernFragenStopp == false {
-//                    user.frageNachSpeichern = true
-//                }
-//                if user.itemClicked && user.NachSpeichernFragenStopp {
-//                    user.itemClicked = false
-//                }
-//                if user.itemClicked == false {
-//                    user.verlauf = false
-//                }
-//
-//            }
-//        }))
         
     }
 }
@@ -745,7 +666,7 @@ struct SemesterNoteAusrechnenVerlauf: View {
                         user.simpleWarning()
                         showDeleteAlert = true
                         hideKeyboard()
-                        print("hi")
+
                     }.alert(isPresented: $showDeleteAlert) {
                         Alert(title: Text("Zurücksetzen"), message: Text("Möchtest du diese Seite wirklich zurücksetzen?"),
                               primaryButton: .destructive(Text("Ja"), action: clearAll),
@@ -759,7 +680,7 @@ struct SemesterNoteAusrechnenVerlauf: View {
                         if calcPunkte() == nil {
                             errorCalc = true
                             user.simpleError()
-                            print("ERROR")
+
                         } else {
                             if calcNote(punkte: calcPunkte()!) > 0 {
                                 if saveSemesterNotenVerlauf(punkte: calcPunkte()!, note: calcNote(punkte: calcPunkte()!)) {
@@ -901,7 +822,7 @@ struct AuswertungVerlauf: View {
                             Spacer()
                             Image(systemName: "chevron.right").foregroundColor(.mainColor)
                         }.padding(.horizontal, 15).onTapGesture {
-                            if user.premium || Products.store.isProductPurchased(Products.goldSub) ||
+                            if Products.store.isProductPurchased(Products.goldSub) ||
                                 Products.store.isProductPurchased(Products.permanent) {
                             
                             user.verlauf = true
@@ -910,7 +831,7 @@ struct AuswertungVerlauf: View {
                             hideKeyboard()
                             }
                         }
-                    if !(user.premium || Products.store.isProductPurchased(Products.goldSub) ||
+                    if !(Products.store.isProductPurchased(Products.goldSub) ||
                          Products.store.isProductPurchased(Products.permanent)) {
                         RoundedRectangle(cornerRadius: 10).foregroundColor(.gray).opacity(0.5)
                             .frame(width: tablet ? 300 : screen.width * 0.85, height: 55)
@@ -1044,7 +965,7 @@ struct AuswertungVerlauf: View {
             }
         }.onAppear {
             semesterNoten = fetchAllSemesterNoten(viewContext: viewContext) ?? semesterNoten
-            print(semesterNoten.count)
+
             if semesterNoten.count >= 4 {
                 for i in 0..<4 {
                     abiSemesterNoten.append(semesterNoten[i])
@@ -1064,7 +985,7 @@ struct AuswertungVerlauf: View {
             }
         }.onChange(of: noteTeilenClicked) { _ in
             semesterNoten = fetchAllSemesterNoten(viewContext: viewContext) ?? semesterNoten
-            print(semesterNoten.count)
+
             if semesterNoten.count >= 4 {
                 for i in 0..<4 {
                     abiSemesterNoten.append(semesterNoten[i])
@@ -1097,7 +1018,7 @@ struct AbiClicked: View {
     func warnUserTrash(item: SemesternotenItem) {
         trashClicked = true
         actItem = item
-        print(trashClicked)
+
         user.simpleWarning()
     }
 
@@ -1267,12 +1188,12 @@ struct AbiClicked: View {
                         ZStack {
                             Color.modeColor.onTapGesture {
                                 user.abiClicked = false
-                                print("hi")
+
                             }
                             HStack {
                                 ArrowLeft().onTapGesture {
                                     user.abiClicked = false
-                                    print("hi")
+
                                 }
                                 Spacer()
                             }
@@ -1292,7 +1213,7 @@ struct AbiClicked: View {
                             Spacer()
                         }
                     }.frame(width: screen.width, height: 50).onTapGesture {
-                        print("hi")
+
                         user.abiClicked = false
                         user.siteOpened = 2
                     }
@@ -1316,20 +1237,17 @@ struct AbiClicked: View {
                                     
                                     if checkIfItemIsInArray(array: abiSemesterNoten, item: item) {
                                         
-                                        for i in 0..<abiSemesterNoten.count {
-                                            print(i)
-                                            if abiSemesterNoten[i].id == item.id {
-                                                
+                                        for i in 0..<abiSemesterNoten.count where abiSemesterNoten[i].id == item.id {
+
                                                 abiSemesterNoten.remove(at: i)
                                                 break
-                                            }
                                             
                                         }
                                         
                                     } else {
                                         abiSemesterNoten.append(item)
                                     }
-                                    print(abiSemesterNoten)
+
                                 }
                                 
                             }
@@ -1397,12 +1315,12 @@ struct AbiClicked: View {
                                       dismissButton: .cancel(Text("Okay")))
                             }.frame(width: tablet ? 250 : 120, height: tablet ? 50 : 40).onTapGesture {
                                 if abiSemesterNoten.count != 4 || !checkIfAbiNotenArrayIsValid() {
-                                    print("failed2")
+
                                     calcSchnittFailed = true
                                     user.simpleError()
                                 } else {
                                     if calcEndPunkteSchnitt() == nil {
-                                        print("failed")
+
                                         user.simpleError()
                                     } else {
                                         endPunkteSchnitt = Double(calcEndPunkteSchnitt()!)

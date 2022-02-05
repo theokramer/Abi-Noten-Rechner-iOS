@@ -48,8 +48,8 @@ struct StartView: View {
                         HomeView()
                     if activeScene == 0 {
                      if fetchAllSemesterNoten(viewContext: viewContext)?.count ?? 0 < 1 ||
-                            user.basicPremium || Products.store.isProductPurchased(Products.basicSub) ||
-                            user.premium || Products.store.isProductPurchased(Products.permanent) ||
+                            Products.store.isProductPurchased(Products.basicSub) ||
+                            Products.store.isProductPurchased(Products.permanent) ||
                             Products.store.isProductPurchased(Products.goldSub) {
                         
                         SemesterNoteAusrechnen().onAppear {
@@ -111,8 +111,8 @@ struct StartView: View {
                     
                     }.sheet(isPresented: $user.spendenClicked, content: {
                         SpendenView().environmentObject(UserStore()).onDisappear {
-                            user.userHasBasicPremium = user.basicPremium || Products.store.isProductPurchased(Products.basicSub) ? true : false
-                            user.userHasGoldPremium = user.premium || Products.store.isProductPurchased(Products.permanent) ||
+                            user.userHasBasicPremium = Products.store.isProductPurchased(Products.basicSub) ? true : false
+                            user.userHasGoldPremium = Products.store.isProductPurchased(Products.permanent) ||
                             Products.store.isProductPurchased(Products.goldSub) ? true : false
                         }
                     }).sheet(isPresented: $user.supportClicked, content: {
@@ -123,15 +123,14 @@ struct StartView: View {
                 
         }.onAppear {
 
-            user.userHasBasicPremium = user.basicPremium || Products.store.isProductPurchased(Products.basicSub) ? true : false
-            user.userHasGoldPremium = user.premium || Products.store.isProductPurchased(Products.permanent) ||
+            user.userHasBasicPremium = Products.store.isProductPurchased(Products.basicSub) ? true : false
+            user.userHasGoldPremium = Products.store.isProductPurchased(Products.permanent) ||
             Products.store.isProductPurchased(Products.goldSub) ? true : false
-            print("hallo")
+
             if !checkIfSaleIsActive() {
                 Color.saleColor = Color("Orange")
             }
             
-            print(self.interstitial.adUnitID)
                 let root = UIApplication.shared.windows.first?.rootViewController
                 self.interstitial.present(fromRootViewController: root!)
             

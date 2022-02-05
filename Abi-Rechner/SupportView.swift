@@ -20,10 +20,9 @@ struct SupportView: View {
                             Image(systemName: "")
                         }
                     }.frame(width: screen.width, height: 50).onTapGesture {
-                        print("hi")
+
                         user.supportClicked = false
                         user.siteOpened = 0
-                        print(user.siteOpened)
                         
                     }
                 }

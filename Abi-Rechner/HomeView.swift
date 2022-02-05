@@ -13,7 +13,6 @@ struct HomeView: View {
     @EnvironmentObject var user: UserStore
     @Environment(\.managedObjectContext) private var viewContext
     @State var noteTeilenClicked = false
-    @State var semesterNoten = [SemesternotenItem]()
     @State var abiSemesterNoten = [SemesternotenItem]()
     @State var shareNote = SemesternotenItem(id: UUID(), name: "", semesterNote: -1, semesterPunkte: 0.0, date: Date())
     @State var shareNoteEndnote = false
@@ -45,123 +44,23 @@ struct HomeView: View {
                 }
                 
                 if user.aktuelleNote != 0 {
-                    VStack {
-                        Text(user.aktuellerName ?? "").font(.title2).bold().padding(.top, 10).padding(.bottom)
-                        HStack {
-                            Text("Punkte-Durchschnitt").font(.title3)
-                            Text("\(String(format: "%.2f", user.aktuellePunkte))").font(.title3).fontWeight(.semibold)
-                        }.padding(.horizontal)
-                        HStack {
-                            Text("Noten-Durchschnitt").font(.title3)
-                            Text("\(String(format: "%.2f", user.aktuelleNote))").font(.title3).fontWeight(.semibold)
-                        }.padding(.horizontal).padding(.top, 5)
-                    }
+                    ResultView()
                 }
                 
-                    ZStack {
-                            RoundedRectangle(cornerRadius: 10).foregroundColor(.mainColor)
-                            HStack {
-                                Text("Neues Semester anlegen").foregroundColor(.modeColor)
-                                Spacer()
-                                Image(systemName: "chevron.right").foregroundColor(.modeColor)
-                            }.padding(.horizontal, 15).onTapGesture {
-                                if fetchAllSemesterNoten(viewContext: viewContext)?.count ?? 0 < 1 ||
-                                    user.userHasBasicPremium || user.userHasGoldPremium {
-                                user.ausrechnen = true
-                                    user.siteOpened = 1
-                                user.updateMode = false
-                                user.aktuellerFaecherArray = fetchMap()
-                                user.aktuellerNotenName = ""
-                                hideKeyboard()
-                                }
-                            }
-                        if !(fetchAllSemesterNoten(viewContext: viewContext)?.count ?? 0 < 1 || user.userHasBasicPremium || user.userHasGoldPremium) {
-                            RoundedRectangle(cornerRadius: 10).foregroundColor(.white).opacity(0.5)
-                                .frame(width: tablet ? 300 : screen.width * 0.85, height: 55)
-                            Image(systemName: "lock").resizable().aspectRatio(contentMode: .fit).frame(width: 25).onTapGesture {
-                                user.spendenClicked = true
-                            }
-                        }
-                    }.frame(width: tablet ? 300 : screen.width * 0.85, height: 55).padding(.horizontal).padding(.top, 12)
+                NewSemesterButton()
                 
                 if fetchAllSemesterNoten(viewContext: viewContext)?[0] != nil {
-                    ZStack {
-                        Color.modeColor
-                        RoundedRectangle(cornerRadius: 10).stroke(Color.mainColor, lineWidth: 0.5)
-                        HStack {
-                            Text("\(fetchAllSemesterNoten(viewContext: viewContext)![0].name) bearbeiten").foregroundColor(.mainColor)
-                            Spacer()
-                            Image(systemName: "chevron.right").foregroundColor(.mainColor)
-                        }.padding(.horizontal)
-                    }.frame(width: tablet ? 300 : screen.width * 0.85, height: 55).padding(.horizontal).onTapGesture {
-                        user.ausrechnen = true
-                        user.siteOpened = 1
-                        user.aktuellerFaecherArray = fetchAllFaecherFromSemesternote(
-                            id: fetchAllSemesterNoten(viewContext: viewContext)![0].id, viewContext: viewContext)
-                        user.aktuellerNotenName = fetchAllSemesterNoten(viewContext: viewContext)![0].name
-                        user.aktuelleID = fetchAllSemesterNoten(viewContext: viewContext)![0].id.uuidString
-                        user.updateMode = true
-                    }.padding(.top, 12)
+                    EditSemesterButton()
                     
                 }
                 if !tablet {
                 
-                ZStack {
-                        RoundedRectangle(cornerRadius: 10).foregroundColor(.modeColorSwitch)
-                        HStack {
-                            Text("Endnote berechnen").foregroundColor(.mainColor )
-                            Spacer()
-                            Image(systemName: "chevron.right").foregroundColor(.mainColor)
-                        }.padding(.horizontal, 15).onTapGesture {
-                            if user.userHasGoldPremium {
-                            user.abiClicked = true
-                            user.updateMode = false
-                                user.schnitt = false
-                                
-                            hideKeyboard()
-                            }
-                        }
-                    if !(user.userHasGoldPremium) {
-                        RoundedRectangle(cornerRadius: 10).foregroundColor(.gray)
-                            .opacity(0.5).frame(width: tablet ? 300 : screen.width * 0.85, height: 55)
-                        Image(systemName: "lock").resizable().aspectRatio(contentMode: .fit)
-                            .frame(width: 25).foregroundColor(.modeColor).onTapGesture {
-                            user.spendenClicked = true
-                        }
-                    }
-                }.frame(width: tablet ? 300 : screen.width * 0.85, height: 55).padding(.horizontal).padding(.top, 12)
+                    EndGradeButton()
                 
-                VStack {
-                    
-                        ZStack {
-                            HStack {
-                                Text("Semesterübersicht").onTapGesture {
-                                    
-                                    if user.userHasGoldPremium || user.userHasBasicPremium {
-                                    user.verlauf = true
-                                        user.schnitt = false
-                                    user.updateMode = false
-                                        
-                                    hideKeyboard()
-                                    }
-                                }
-                                Image(systemName: "chevron.right").padding(.leading, 10)
-                            }.foregroundColor(.gray)
-                            
-                            if !(user.userHasGoldPremium || user.userHasBasicPremium) {
-                                RoundedRectangle(cornerRadius: 10).foregroundColor(.gray).opacity(0.5)
-                                    .frame(width: tablet ? 300 : screen.width * 0.85, height: 55)
-                                Image(systemName: "lock").resizable().aspectRatio(contentMode: .fit).frame(width: 25).onTapGesture {
-                                    user.spendenClicked = true
-                                    
-                                }
-                            }
-                            
-                        }.padding(.top, 12)
-
+                    SemesterOverviewButton()
                     Spacer()
                     HStack {
-                        
+
                         HStack {
                             Image(systemName: "star")
                             Text("Premium")
@@ -174,10 +73,9 @@ struct HomeView: View {
                             Text("Note Teilen").foregroundColor(.modeColorSwitch)
                         }.onTapGesture {
                             noteTeilenClicked = true
-                            
+
                         }
                     }.padding()
-                }
                 }
                 if tablet {
                     Spacer()
@@ -189,73 +87,9 @@ struct HomeView: View {
             }
             
         }.sheet(isPresented: $noteTeilenClicked) {
-            VStack {
-                if !tablet {
-                    RoundedRectangle(cornerRadius: 4).frame(width: 37, height: 6).foregroundColor(.gray).padding(.top, 8).onTapGesture {
-                        noteTeilenClicked = false
-                        
-                    }
-                    Text("Note teilen").font(.title).bold().padding(.top, 10)
-                    Text("Wähle jetzt eine Note aus, die du teilen möchtest.")
-                        .padding(.top).padding(.horizontal, 25).multilineTextAlignment(.center).padding(.bottom, 20)
-                    
-                    ScrollView(showsIndicators: false) {
-                        if user.endNoteAbi != 0 {
-                            ZStack {
-                                if shareNoteEndnote {
-                                    RoundedRectangle(cornerRadius: 10).foregroundColor(.mainColor2)
-                                } else {
-                                    RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.5).foregroundColor(.mainColor2)
-                                }
-                                
-                                Text("Endnote: \(String(format: "%.2f", user.endNoteAbi))")
-                                    .foregroundColor(shareNoteEndnote ? .modeColor : .modeColorSwitch)
-                            }.frame(width: 200, height: 60).onTapGesture {
-                                if #available(iOS 15, *) {
-                                    shareNote = SemesternotenItem(id: UUID(), name: "Endnote", semesterNote: user.endNoteAbi,
-                                                                  semesterPunkte: user.endPunkteAbi, date: Date.now)
-                                } else {
-                                }
-                                shareNoteEndnote = true
-                            }
-                        }
-                        
-                        ForEach(semesterNoten, id: \.id) { item in
-                            ZStack {
-                                
-                                if shareNote.id == item.id {
-                                    RoundedRectangle(cornerRadius: 10).foregroundColor(.mainColor2)
-                                } else {
-                                    RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.5).foregroundColor(.mainColor2)
-                                }
-                                
-                                HStack {
-                                    Text(item.name)
-                                    Text("\(String(format: "%.2f", item.semesterNote))")
-                                    
-                                }.foregroundColor(shareNote.id == item.id ? .modeColor : .modeColorSwitch)
-                            }.frame(width: 200, height: 60).onTapGesture {
-                                shareNote = item
-                                shareNoteEndnote = false
-                            }
-                        }
-                    }
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10).foregroundColor(.mainColor2)
-                        Text("Teilen").foregroundColor(.modeColor).font(tablet ? .title : .headline)
-                    }.frame(width: tablet ? 280 : 150, height: tablet ? 80 : 50).onTapGesture {
-                        
-                        if shareNote.semesterNote != -1 {
-                            user.simpleSuccess()
-                            noteTeilenClicked = false
-                            openSHareWindow = true
-                        } else {
-                            user.simpleError()
-                        }
-                    }
-                    Spacer()
-                }
-            }
+            NoteTeilenView(noteTeilenClicked: $noteTeilenClicked,semesterNoten: user.semesterNoten,
+                           abiSemesterNoten: abiSemesterNoten, shareNote: $shareNote,
+                           shareNoteEndnote: $shareNoteEndnote, openSHareWindow: $openSHareWindow)
         }.onChange(of: user.sendEmail) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                 if user.sendEmail {
@@ -267,14 +101,14 @@ struct HomeView: View {
                 }
             }
         }.onAppear {
-            semesterNoten = fetchAllSemesterNoten(viewContext: viewContext) ?? semesterNoten
-            print(semesterNoten.count)
-            if semesterNoten.count >= 4 {
+            user.semesterNoten = fetchAllSemesterNoten(viewContext: viewContext) ?? []
+
+            if user.semesterNoten.count >= 4 {
                 for i in 0..<4 {
-                    abiSemesterNoten.append(semesterNoten[i])
+                    abiSemesterNoten.append(user.semesterNoten[i])
                 }
             } else {
-                abiSemesterNoten = semesterNoten
+                abiSemesterNoten = user.semesterNoten
             }
             for i in user.aktuellerAbiNotenArray.indices {
                 if user.pruefungsNamenArray != [] {
@@ -300,14 +134,14 @@ struct HomeView: View {
                 }
             
         }.onChange(of: noteTeilenClicked) { _ in
-            semesterNoten = fetchAllSemesterNoten(viewContext: viewContext) ?? semesterNoten
-            print(semesterNoten.count)
-            if semesterNoten.count >= 4 {
+            user.semesterNoten = fetchAllSemesterNoten(viewContext: viewContext) ?? []
+
+            if user.semesterNoten.count >= 4 {
                 for i in 0..<4 {
-                    abiSemesterNoten.append(semesterNoten[i])
+                    abiSemesterNoten.append(user.semesterNoten[i])
                 }
             } else {
-                abiSemesterNoten = semesterNoten
+                abiSemesterNoten = user.semesterNoten
             }
             for i in user.aktuellerAbiNotenArray.indices {
                 if user.pruefungsNamenArray != [] {
@@ -348,11 +182,9 @@ struct BannerADView: UIViewRepresentable {
             self.parent = parent
         }
         func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
-            print("Did Receive Ad")
-            
         }
         func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
-            print("Failed Receive Ad")
+            
         }
     }
     
@@ -361,5 +193,223 @@ struct BannerADView: UIViewRepresentable {
 struct PhoneHomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
+    }
+}
+
+struct ResultView: View {
+    @EnvironmentObject var user: UserStore
+    var body: some View {
+        VStack {
+            Text(user.aktuellerName ?? "").font(.title2).bold().padding(.top, 10).padding(.bottom)
+            HStack {
+                Text("Punkte-Durchschnitt").font(.title3)
+                Text("\(String(format: "%.2f", user.aktuellePunkte))").font(.title3).fontWeight(.semibold)
+            }.padding(.horizontal)
+            HStack {
+                Text("Noten-Durchschnitt").font(.title3)
+                Text("\(String(format: "%.2f", user.aktuelleNote))").font(.title3).fontWeight(.semibold)
+            }.padding(.horizontal).padding(.top, 5)
+        }
+    }
+}
+
+struct NewSemesterButton: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    @EnvironmentObject var user: UserStore
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 10).foregroundColor(.mainColor)
+            HStack {
+                Text("Neues Semester anlegen").foregroundColor(.modeColor)
+                Spacer()
+                Image(systemName: "chevron.right").foregroundColor(.modeColor)
+            }.padding(.horizontal, 15).onTapGesture {
+                if fetchAllSemesterNoten(viewContext: viewContext)?.count ?? 0 < 1 ||
+                    user.userHasBasicPremium || user.userHasGoldPremium {
+                    user.ausrechnen = true
+                    user.siteOpened = 1
+                    user.updateMode = false
+                    user.aktuellerFaecherArray = fetchMap()
+                    user.aktuellerNotenName = ""
+                    hideKeyboard()
+                }
+            }
+            if !(fetchAllSemesterNoten(viewContext: viewContext)?.count ?? 0 < 1 || user.userHasBasicPremium || user.userHasGoldPremium) {
+                RoundedRectangle(cornerRadius: 10).foregroundColor(.white).opacity(0.5)
+                    .frame(width: tablet ? 300 : screen.width * 0.85, height: 55)
+                Image(systemName: "lock").resizable().aspectRatio(contentMode: .fit).frame(width: 25).onTapGesture {
+                    user.spendenClicked = true
+                }
+            }
+        }.frame(width: tablet ? 300 : screen.width * 0.85, height: 55).padding(.horizontal).padding(.top, 12)
+    }
+}
+
+struct EditSemesterButton: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    @EnvironmentObject var user: UserStore
+    var body: some View {
+        ZStack {
+            Color.modeColor
+            RoundedRectangle(cornerRadius: 10).stroke(Color.mainColor, lineWidth: 0.5)
+            HStack {
+                Text("\(fetchAllSemesterNoten(viewContext: viewContext)![0].name) bearbeiten").foregroundColor(.mainColor)
+                Spacer()
+                Image(systemName: "chevron.right").foregroundColor(.mainColor)
+            }.padding(.horizontal)
+        }.frame(width: tablet ? 300 : screen.width * 0.85, height: 55).padding(.horizontal).onTapGesture {
+            user.ausrechnen = true
+            user.siteOpened = 1
+            user.aktuellerFaecherArray = fetchAllFaecherFromSemesternote(
+                id: fetchAllSemesterNoten(viewContext: viewContext)![0].id, viewContext: viewContext)
+            user.aktuellerNotenName = fetchAllSemesterNoten(viewContext: viewContext)![0].name
+            user.aktuelleID = fetchAllSemesterNoten(viewContext: viewContext)![0].id.uuidString
+            user.updateMode = true
+        }.padding(.top, 12)
+    }
+}
+
+struct EndGradeButton: View {
+    @EnvironmentObject var user: UserStore
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 10).foregroundColor(.modeColorSwitch)
+            HStack {
+                Text("Endnote berechnen").foregroundColor(.mainColor )
+                Spacer()
+                Image(systemName: "chevron.right").foregroundColor(.mainColor)
+            }.padding(.horizontal, 15).onTapGesture {
+                if user.userHasGoldPremium {
+                    user.abiClicked = true
+                    user.updateMode = false
+                    user.schnitt = false
+
+                    hideKeyboard()
+                }
+            }
+            if !(user.userHasGoldPremium) {
+                RoundedRectangle(cornerRadius: 10).foregroundColor(.gray)
+                    .opacity(0.5).frame(width: tablet ? 300 : screen.width * 0.85, height: 55)
+                Image(systemName: "lock").resizable().aspectRatio(contentMode: .fit)
+                    .frame(width: 25).foregroundColor(.modeColor).onTapGesture {
+                        user.spendenClicked = true
+                    }
+            }
+        }.frame(width: tablet ? 300 : screen.width * 0.85, height: 55).padding(.horizontal).padding(.top, 12)
+    }
+}
+
+struct SemesterOverviewButton: View {
+    
+    @EnvironmentObject var user: UserStore
+    var body: some View {
+        VStack {
+
+            ZStack {
+                HStack {
+                    Text("Semesterübersicht").onTapGesture {
+
+                        if user.userHasGoldPremium || user.userHasBasicPremium {
+                            user.verlauf = true
+                            user.schnitt = false
+                            user.updateMode = false
+
+                            hideKeyboard()
+                        }
+                    }
+                    Image(systemName: "chevron.right").padding(.leading, 10)
+                }.foregroundColor(.gray)
+
+                if !(user.userHasGoldPremium || user.userHasBasicPremium) {
+                    RoundedRectangle(cornerRadius: 10).foregroundColor(.gray).opacity(0.5)
+                        .frame(width: tablet ? 300 : screen.width * 0.85, height: 55)
+                    Image(systemName: "lock").resizable().aspectRatio(contentMode: .fit).frame(width: 25).onTapGesture {
+                        user.spendenClicked = true
+
+                    }
+                }
+
+            }.padding(.top, 12)
+
+
+        }
+    }
+}
+
+struct NoteTeilenView: View {
+    @EnvironmentObject var user: UserStore
+    @Binding var noteTeilenClicked: Bool
+    @State var semesterNoten: [SemesternotenItem]
+    @State var abiSemesterNoten:[SemesternotenItem]
+    @Binding var shareNote:SemesternotenItem
+    @Binding var shareNoteEndnote:Bool
+    @Binding var openSHareWindow:Bool
+    var body: some View {
+        VStack {
+            if !tablet {
+                RoundedRectangle(cornerRadius: 4).frame(width: 37, height: 6).foregroundColor(.gray).padding(.top, 8).onTapGesture {
+                    noteTeilenClicked = false
+                }
+                Text("Note teilen").font(.title).bold().padding(.top, 10)
+                Text("Wähle jetzt eine Note aus, die du teilen möchtest.")
+                    .padding(.top).padding(.horizontal, 25).multilineTextAlignment(.center).padding(.bottom, 20)
+
+                ScrollView(showsIndicators: false) {
+                    if user.endNoteAbi != 0 {
+                        ZStack {
+                            if shareNoteEndnote {
+                                RoundedRectangle(cornerRadius: 10).foregroundColor(.mainColor2)
+                            } else {
+                                RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.5).foregroundColor(.mainColor2)
+                            }
+
+                            Text("Endnote: \(String(format: "%.2f", user.endNoteAbi))")
+                                .foregroundColor(shareNoteEndnote ? .modeColor : .modeColorSwitch)
+                        }.frame(width: 200, height: 60).onTapGesture {
+                            if #available(iOS 15, *) {
+                                shareNote = SemesternotenItem(id: UUID(), name: "Endnote", semesterNote: user.endNoteAbi,
+                                                              semesterPunkte: user.endPunkteAbi, date: Date.now)
+                            } else {
+                            }
+                            shareNoteEndnote = true
+                        }
+                    }
+
+                    ForEach(semesterNoten, id: \.id) { item in
+                        ZStack {
+
+                            if shareNote.id == item.id {
+                                RoundedRectangle(cornerRadius: 10).foregroundColor(.mainColor2)
+                            } else {
+                                RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.5).foregroundColor(.mainColor2)
+                            }
+
+                            HStack {
+                                Text(item.name)
+                                Text("\(String(format: "%.2f", item.semesterNote))")
+
+                            }.foregroundColor(shareNote.id == item.id ? .modeColor : .modeColorSwitch)
+                        }.frame(width: 200, height: 60).onTapGesture {
+                            shareNote = item
+                            shareNoteEndnote = false
+                        }
+                    }
+                }
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10).foregroundColor(.mainColor2)
+                    Text("Teilen").foregroundColor(.modeColor).font(tablet ? .title : .headline)
+                }.frame(width: tablet ? 280 : 150, height: tablet ? 80 : 50).onTapGesture {
+
+                    if shareNote.semesterNote != -1 {
+                        user.simpleSuccess()
+                        noteTeilenClicked = false
+                        openSHareWindow = true
+                    } else {
+                        user.simpleError()
+                    }
+                }
+                Spacer()
+            }
+        }
     }
 }

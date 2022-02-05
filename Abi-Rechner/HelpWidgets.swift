@@ -38,10 +38,7 @@ struct SaleView: View {
                     Spacer()
                     Image(systemName: "chevron.right").foregroundColor(.white)
                 }.padding(.horizontal, 15).onTapGesture {
-                    if !(user.basicPremium || Products.store.isProductPurchased(Products.basicSub) ||
-                         user.premium || Products.store.isProductPurchased(Products.permanent) ||
-                         Products.store.isProductPurchased(Products.goldSub)) {
-                        
+                    if !(user.userHasGoldPremium || user.userHasBasicPremium) {
                         user.spendenClicked = true
                     }
                 }
