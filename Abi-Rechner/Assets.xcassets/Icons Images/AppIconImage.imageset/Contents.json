@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "CABAE984-CA3A-48F7-8947-0451146BF22B.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

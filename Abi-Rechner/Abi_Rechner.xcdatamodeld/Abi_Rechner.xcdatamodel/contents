@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19461" systemVersion="21A559" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Fach" representedClassName="Fach" syncable="YES">
+        <attribute name="gewichtung" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="note" optional="YES" attributeType="String"/>
+        <attribute name="position" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="alsSemesterFach" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Semesternote" inverseName="faecher" inverseEntity="Semesternote"/>
+    </entity>
+    <entity name="Semesternote" representedClassName="Semesternote" syncable="YES">
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="semesterNote" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="semesterPunkte" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="faecher" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Fach" inverseName="alsSemesterFach" inverseEntity="Fach"/>
+    </entity>
+    <elements>
+        <element name="Fach" positionX="-54" positionY="18" width="128" height="119"/>
+        <element name="Semesternote" positionX="-63" positionY="-18" width="128" height="119"/>
+    </elements>
+</model>

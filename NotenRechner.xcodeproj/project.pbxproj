@@ -1,0 +1,751 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 52;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		201AC7F925BC4A6F00B236F3 /* AbiRechner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 201AC7F825BC4A6F00B236F3 /* AbiRechner.swift */; };
+		201AC7FD25BC4A7000B236F3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 201AC7FC25BC4A7000B236F3 /* Assets.xcassets */; };
+		201AC80025BC4A7000B236F3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 201AC7FF25BC4A7000B236F3 /* Preview Assets.xcassets */; };
+		201AC80225BC4A7000B236F3 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 201AC80125BC4A7000B236F3 /* Persistence.swift */; };
+		201AC80525BC4A7000B236F3 /* Abi_Rechner.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 201AC80325BC4A7000B236F3 /* Abi_Rechner.xcdatamodeld */; };
+		201AC81925BC4BCE00B236F3 /* SemesterNoteAusrechnen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 201AC81825BC4BCE00B236F3 /* SemesterNoteAusrechnen.swift */; };
+		201AC81D25BC4FC200B236F3 /* SemesterNotenVerlauf.swift in Sources */ = {isa = PBXBuildFile; fileRef = 201AC81C25BC4FC200B236F3 /* SemesterNotenVerlauf.swift */; };
+		201AC82025BC506A00B236F3 /* TopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 201AC81F25BC506A00B236F3 /* TopBar.swift */; };
+		2033DB9827907FF4005653C1 /* SpendenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2033DB9427907FF4005653C1 /* SpendenView.swift */; };
+		2033DB9927907FF4005653C1 /* StartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2033DB9527907FF4005653C1 /* StartView.swift */; };
+		2033DB9A27907FF4005653C1 /* UserStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2033DB9627907FF4005653C1 /* UserStore.swift */; };
+		2033DB9B27907FF4005653C1 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2033DB9727907FF4005653C1 /* HomeView.swift */; };
+		2036FDD527AEA6E200D248DD /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2036FDD427AEA6E200D248DD /* SupportView.swift */; };
+		206ADDDE26B454FD00443645 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 206ADDDD26B454FD00443645 /* WidgetKit.framework */; };
+		206ADDE026B454FE00443645 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 206ADDDF26B454FD00443645 /* SwiftUI.framework */; };
+		206ADDE326B454FE00443645 /* Widget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 206ADDE226B454FE00443645 /* Widget.swift */; };
+		206ADDE626B454FF00443645 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 206ADDE526B454FF00443645 /* Assets.xcassets */; };
+		206ADDEC26B454FF00443645 /* WidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 206ADDDC26B454FD00443645 /* WidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		206ADDF326B552B500443645 /* Widget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 206ADDF626B552B500443645 /* Widget.intentdefinition */; };
+		206ADDF426B552B500443645 /* Widget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 206ADDF626B552B500443645 /* Widget.intentdefinition */; };
+		20779AFE25C82F0800BBCC42 /* AppStoreReviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20779AFD25C82F0800BBCC42 /* AppStoreReviewManager.swift */; };
+		207AF1D927AA99640017FBCF /* GlobalFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207AF1D827AA99640017FBCF /* GlobalFuncs.swift */; };
+		207AF1DB27AA9CBD0017FBCF /* HelpWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207AF1DA27AA9CBD0017FBCF /* HelpWidgets.swift */; };
+		207B30AB2740009800A15146 /* IAPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207B30AA2740009800A15146 /* IAPManager.swift */; };
+		207B30AE2740012300A15146 /* Products.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207B30AD2740012300A15146 /* Products.swift */; };
+		207D813425C47DF300ADD682 /* Semesternote+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207D813025C47DF300ADD682 /* Semesternote+CoreDataClass.swift */; };
+		207D813525C47DF300ADD682 /* Semesternote+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207D813125C47DF300ADD682 /* Semesternote+CoreDataProperties.swift */; };
+		207D813625C47DF300ADD682 /* Fach+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207D813225C47DF300ADD682 /* Fach+CoreDataClass.swift */; };
+		207D813725C47DF300ADD682 /* Fach+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207D813325C47DF300ADD682 /* Fach+CoreDataProperties.swift */; };
+		207D814325C4A2F700ADD682 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 207D814225C4A2F700ADD682 /* StoreKit.framework */; };
+		7A141AFF74BDC4C7378B75E5 /* Pods_NotenRechner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CAB817A3126BE728D04E909 /* Pods_NotenRechner.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		206ADDEA26B454FF00443645 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 201AC7ED25BC4A6F00B236F3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 206ADDDB26B454FD00443645;
+			remoteInfo = WidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		206ADDF026B454FF00443645 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				206ADDEC26B454FF00443645 /* WidgetExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		201AC7F525BC4A6F00B236F3 /* NotenRechner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotenRechner.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		201AC7F825BC4A6F00B236F3 /* AbiRechner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbiRechner.swift; sourceTree = "<group>"; };
+		201AC7FC25BC4A7000B236F3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		201AC7FF25BC4A7000B236F3 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		201AC80125BC4A7000B236F3 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		201AC80425BC4A7000B236F3 /* Abi_Rechner.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Abi_Rechner.xcdatamodel; sourceTree = "<group>"; };
+		201AC80625BC4A7000B236F3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		201AC81825BC4BCE00B236F3 /* SemesterNoteAusrechnen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SemesterNoteAusrechnen.swift; sourceTree = "<group>"; };
+		201AC81C25BC4FC200B236F3 /* SemesterNotenVerlauf.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SemesterNotenVerlauf.swift; sourceTree = "<group>"; };
+		201AC81F25BC506A00B236F3 /* TopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBar.swift; sourceTree = "<group>"; };
+		2033DB9427907FF4005653C1 /* SpendenView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpendenView.swift; sourceTree = "<group>"; };
+		2033DB9527907FF4005653C1 /* StartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartView.swift; sourceTree = "<group>"; };
+		2033DB9627907FF4005653C1 /* UserStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserStore.swift; sourceTree = "<group>"; };
+		2033DB9727907FF4005653C1 /* HomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		2036FDD427AEA6E200D248DD /* SupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportView.swift; sourceTree = "<group>"; };
+		206ADDDC26B454FD00443645 /* WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		206ADDDD26B454FD00443645 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		206ADDDF26B454FD00443645 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		206ADDE226B454FE00443645 /* Widget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Widget.swift; sourceTree = "<group>"; };
+		206ADDE526B454FF00443645 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		206ADDE726B454FF00443645 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		206ADDF126B4571600443645 /* WidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WidgetExtension.entitlements; sourceTree = "<group>"; };
+		206ADDF226B4572C00443645 /* NotenRechner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotenRechner.entitlements; sourceTree = "<group>"; };
+		206ADDF526B552B500443645 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; name = Base; path = Base.lproj/Widget.intentdefinition; sourceTree = "<group>"; };
+		206ADDF826B552C300443645 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Widget.strings; sourceTree = "<group>"; };
+		20779AFD25C82F0800BBCC42 /* AppStoreReviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreReviewManager.swift; sourceTree = "<group>"; };
+		207AF1D827AA99640017FBCF /* GlobalFuncs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalFuncs.swift; sourceTree = "<group>"; };
+		207AF1DA27AA9CBD0017FBCF /* HelpWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpWidgets.swift; sourceTree = "<group>"; };
+		207B30AA2740009800A15146 /* IAPManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IAPManager.swift; sourceTree = "<group>"; };
+		207B30AD2740012300A15146 /* Products.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Products.swift; sourceTree = "<group>"; };
+		207D813025C47DF300ADD682 /* Semesternote+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Semesternote+CoreDataClass.swift"; sourceTree = "<group>"; };
+		207D813125C47DF300ADD682 /* Semesternote+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Semesternote+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		207D813225C47DF300ADD682 /* Fach+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Fach+CoreDataClass.swift"; sourceTree = "<group>"; };
+		207D813325C47DF300ADD682 /* Fach+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Fach+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		207D814225C4A2F700ADD682 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		207D815125C54E7C00ADD682 /* ContentInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ContentInfo.plist; sourceTree = "<group>"; };
+		207D815E25C551AC00ADD682 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
+		20DDBFBC27607CE500E80658 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Widget.strings; sourceTree = "<group>"; };
+		20FD2A3727AEC84D00F8AF40 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
+		3CAB817A3126BE728D04E909 /* Pods_NotenRechner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NotenRechner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4FFA8675C129B6C08EDA65CE /* Pods-NotenRechner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotenRechner.debug.xcconfig"; path = "Target Support Files/Pods-NotenRechner/Pods-NotenRechner.debug.xcconfig"; sourceTree = "<group>"; };
+		584A2936A1CDC5E5CBCA1B64 /* Pods-NotenRechner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotenRechner.release.xcconfig"; path = "Target Support Files/Pods-NotenRechner/Pods-NotenRechner.release.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		201AC7F225BC4A6F00B236F3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				207D814325C4A2F700ADD682 /* StoreKit.framework in Frameworks */,
+				7A141AFF74BDC4C7378B75E5 /* Pods_NotenRechner.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		206ADDD926B454FD00443645 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				206ADDE026B454FE00443645 /* SwiftUI.framework in Frameworks */,
+				206ADDDE26B454FD00443645 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		201AC7EC25BC4A6F00B236F3 = {
+			isa = PBXGroup;
+			children = (
+				206ADDF226B4572C00443645 /* NotenRechner.entitlements */,
+				206ADDF126B4571600443645 /* WidgetExtension.entitlements */,
+				20779AFD25C82F0800BBCC42 /* AppStoreReviewManager.swift */,
+				207D813025C47DF300ADD682 /* Semesternote+CoreDataClass.swift */,
+				207D813125C47DF300ADD682 /* Semesternote+CoreDataProperties.swift */,
+				207D813225C47DF300ADD682 /* Fach+CoreDataClass.swift */,
+				207D813325C47DF300ADD682 /* Fach+CoreDataProperties.swift */,
+				201AC7F725BC4A6F00B236F3 /* Abi-Rechner */,
+				207D815025C54E7C00ADD682 /* InAppPurchases */,
+				206ADDE126B454FE00443645 /* Widget */,
+				201AC7F625BC4A6F00B236F3 /* Products */,
+				207D813F25C49A4A00ADD682 /* Frameworks */,
+				C25F162840375A37FED907E4 /* Pods */,
+			);
+			sourceTree = "<group>";
+		};
+		201AC7F625BC4A6F00B236F3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				201AC7F525BC4A6F00B236F3 /* NotenRechner.app */,
+				206ADDDC26B454FD00443645 /* WidgetExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		201AC7F725BC4A6F00B236F3 /* Abi-Rechner */ = {
+			isa = PBXGroup;
+			children = (
+				20FD2A3727AEC84D00F8AF40 /* .swiftlint.yml */,
+				2033DB9727907FF4005653C1 /* HomeView.swift */,
+				207AF1DA27AA9CBD0017FBCF /* HelpWidgets.swift */,
+				207AF1D827AA99640017FBCF /* GlobalFuncs.swift */,
+				2033DB9427907FF4005653C1 /* SpendenView.swift */,
+				2033DB9527907FF4005653C1 /* StartView.swift */,
+				2033DB9627907FF4005653C1 /* UserStore.swift */,
+				207B30AC2740010D00A15146 /* New Purchase */,
+				201AC81F25BC506A00B236F3 /* TopBar.swift */,
+				201AC81825BC4BCE00B236F3 /* SemesterNoteAusrechnen.swift */,
+				201AC81C25BC4FC200B236F3 /* SemesterNotenVerlauf.swift */,
+				201AC7FC25BC4A7000B236F3 /* Assets.xcassets */,
+				201AC80125BC4A7000B236F3 /* Persistence.swift */,
+				201AC80625BC4A7000B236F3 /* Info.plist */,
+				201AC80325BC4A7000B236F3 /* Abi_Rechner.xcdatamodeld */,
+				201AC7F825BC4A6F00B236F3 /* AbiRechner.swift */,
+				201AC7FE25BC4A7000B236F3 /* Preview Content */,
+				207D815E25C551AC00ADD682 /* Configuration.storekit */,
+				2036FDD427AEA6E200D248DD /* SupportView.swift */,
+			);
+			path = "Abi-Rechner";
+			sourceTree = "<group>";
+		};
+		201AC7FE25BC4A7000B236F3 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				201AC7FF25BC4A7000B236F3 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		206ADDE126B454FE00443645 /* Widget */ = {
+			isa = PBXGroup;
+			children = (
+				206ADDE226B454FE00443645 /* Widget.swift */,
+				206ADDF626B552B500443645 /* Widget.intentdefinition */,
+				206ADDE526B454FF00443645 /* Assets.xcassets */,
+				206ADDE726B454FF00443645 /* Info.plist */,
+			);
+			path = Widget;
+			sourceTree = "<group>";
+		};
+		207B30AC2740010D00A15146 /* New Purchase */ = {
+			isa = PBXGroup;
+			children = (
+				207B30AA2740009800A15146 /* IAPManager.swift */,
+				207B30AD2740012300A15146 /* Products.swift */,
+			);
+			path = "New Purchase";
+			sourceTree = "<group>";
+		};
+		207D813F25C49A4A00ADD682 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				207D814225C4A2F700ADD682 /* StoreKit.framework */,
+				3CAB817A3126BE728D04E909 /* Pods_NotenRechner.framework */,
+				206ADDDD26B454FD00443645 /* WidgetKit.framework */,
+				206ADDDF26B454FD00443645 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		207D815025C54E7C00ADD682 /* InAppPurchases */ = {
+			isa = PBXGroup;
+			children = (
+				207D815125C54E7C00ADD682 /* ContentInfo.plist */,
+			);
+			path = InAppPurchases;
+			sourceTree = "<group>";
+		};
+		C25F162840375A37FED907E4 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				4FFA8675C129B6C08EDA65CE /* Pods-NotenRechner.debug.xcconfig */,
+				584A2936A1CDC5E5CBCA1B64 /* Pods-NotenRechner.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		201AC7F425BC4A6F00B236F3 /* NotenRechner */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 201AC80925BC4A7000B236F3 /* Build configuration list for PBXNativeTarget "NotenRechner" */;
+			buildPhases = (
+				96A4B341858BE9A508F1B014 /* [CP] Check Pods Manifest.lock */,
+				201AC7F125BC4A6F00B236F3 /* Sources */,
+				201AC7F225BC4A6F00B236F3 /* Frameworks */,
+				201AC7F325BC4A6F00B236F3 /* Resources */,
+				08BF5C288EC2CD0C6611C879 /* [CP] Embed Pods Frameworks */,
+				206ADDF026B454FF00443645 /* Embed App Extensions */,
+				20FD2A3627AEB94D00F8AF40 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				206ADDEB26B454FF00443645 /* PBXTargetDependency */,
+			);
+			name = NotenRechner;
+			productName = "Abi-Rechner";
+			productReference = 201AC7F525BC4A6F00B236F3 /* NotenRechner.app */;
+			productType = "com.apple.product-type.application";
+		};
+		206ADDDB26B454FD00443645 /* WidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 206ADDED26B454FF00443645 /* Build configuration list for PBXNativeTarget "WidgetExtension" */;
+			buildPhases = (
+				206ADDD826B454FD00443645 /* Sources */,
+				206ADDD926B454FD00443645 /* Frameworks */,
+				206ADDDA26B454FD00443645 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WidgetExtension;
+			productName = WidgetExtension;
+			productReference = 206ADDDC26B454FD00443645 /* WidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		201AC7ED25BC4A6F00B236F3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1250;
+				LastUpgradeCheck = 1230;
+				TargetAttributes = {
+					201AC7F425BC4A6F00B236F3 = {
+						CreatedOnToolsVersion = 12.3;
+					};
+					206ADDDB26B454FD00443645 = {
+						CreatedOnToolsVersion = 12.5;
+					};
+				};
+			};
+			buildConfigurationList = 201AC7F025BC4A6F00B236F3 /* Build configuration list for PBXProject "NotenRechner" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				de,
+			);
+			mainGroup = 201AC7EC25BC4A6F00B236F3;
+			packageReferences = (
+				2043D9B52646CF100017189D /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */,
+			);
+			productRefGroup = 201AC7F625BC4A6F00B236F3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				201AC7F425BC4A6F00B236F3 /* NotenRechner */,
+				206ADDDB26B454FD00443645 /* WidgetExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		201AC7F325BC4A6F00B236F3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				201AC80025BC4A7000B236F3 /* Preview Assets.xcassets in Resources */,
+				201AC7FD25BC4A7000B236F3 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		206ADDDA26B454FD00443645 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				206ADDE626B454FF00443645 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		08BF5C288EC2CD0C6611C879 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-NotenRechner/Pods-NotenRechner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-NotenRechner/Pods-NotenRechner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-NotenRechner/Pods-NotenRechner-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		20FD2A3627AEB94D00F8AF40 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export PATH=\"$PATH:/opt/homebrew/bin\"\n\nif which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+		96A4B341858BE9A508F1B014 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-NotenRechner-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		201AC7F125BC4A6F00B236F3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				20779AFE25C82F0800BBCC42 /* AppStoreReviewManager.swift in Sources */,
+				2033DB9A27907FF4005653C1 /* UserStore.swift in Sources */,
+				201AC80225BC4A7000B236F3 /* Persistence.swift in Sources */,
+				207D813725C47DF300ADD682 /* Fach+CoreDataProperties.swift in Sources */,
+				207D813525C47DF300ADD682 /* Semesternote+CoreDataProperties.swift in Sources */,
+				201AC80525BC4A7000B236F3 /* Abi_Rechner.xcdatamodeld in Sources */,
+				207AF1DB27AA9CBD0017FBCF /* HelpWidgets.swift in Sources */,
+				206ADDF326B552B500443645 /* Widget.intentdefinition in Sources */,
+				201AC81925BC4BCE00B236F3 /* SemesterNoteAusrechnen.swift in Sources */,
+				2033DB9B27907FF4005653C1 /* HomeView.swift in Sources */,
+				207D813425C47DF300ADD682 /* Semesternote+CoreDataClass.swift in Sources */,
+				2033DB9827907FF4005653C1 /* SpendenView.swift in Sources */,
+				2036FDD527AEA6E200D248DD /* SupportView.swift in Sources */,
+				2033DB9927907FF4005653C1 /* StartView.swift in Sources */,
+				201AC82025BC506A00B236F3 /* TopBar.swift in Sources */,
+				201AC81D25BC4FC200B236F3 /* SemesterNotenVerlauf.swift in Sources */,
+				207B30AB2740009800A15146 /* IAPManager.swift in Sources */,
+				207AF1D927AA99640017FBCF /* GlobalFuncs.swift in Sources */,
+				207B30AE2740012300A15146 /* Products.swift in Sources */,
+				207D813625C47DF300ADD682 /* Fach+CoreDataClass.swift in Sources */,
+				201AC7F925BC4A6F00B236F3 /* AbiRechner.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		206ADDD826B454FD00443645 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				206ADDF426B552B500443645 /* Widget.intentdefinition in Sources */,
+				206ADDE326B454FE00443645 /* Widget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		206ADDEB26B454FF00443645 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 206ADDDB26B454FD00443645 /* WidgetExtension */;
+			targetProxy = 206ADDEA26B454FF00443645 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		206ADDF626B552B500443645 /* Widget.intentdefinition */ = {
+			isa = PBXVariantGroup;
+			children = (
+				206ADDF526B552B500443645 /* Base */,
+				206ADDF826B552C300443645 /* en */,
+				20DDBFBC27607CE500E80658 /* de */,
+			);
+			name = Widget.intentdefinition;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		201AC80725BC4A7000B236F3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		201AC80825BC4A7000B236F3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		201AC80A25BC4A7000B236F3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4FFA8675C129B6C08EDA65CE /* Pods-NotenRechner.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = NotenRechner.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Abi-Rechner/Preview Content\"";
+				DEVELOPMENT_TEAM = 67AYJ24F97;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "Abi-Rechner/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 2.130;
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.Abi-Rechner";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		201AC80B25BC4A7000B236F3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 584A2936A1CDC5E5CBCA1B64 /* Pods-NotenRechner.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = NotenRechner.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Abi-Rechner/Preview Content\"";
+				DEVELOPMENT_TEAM = 67AYJ24F97;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "Abi-Rechner/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 2.130;
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.Abi-Rechner";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		206ADDEE26B454FF00443645 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = WidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 67AYJ24F97;
+				INFOPLIST_FILE = Widget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 2.130;
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.Abi-Rechner.Widget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		206ADDEF26B454FF00443645 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = WidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 67AYJ24F97;
+				INFOPLIST_FILE = Widget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 2.130;
+				PRODUCT_BUNDLE_IDENTIFIER = "tk.Abi-Rechner.Widget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		201AC7F025BC4A6F00B236F3 /* Build configuration list for PBXProject "NotenRechner" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				201AC80725BC4A7000B236F3 /* Debug */,
+				201AC80825BC4A7000B236F3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		201AC80925BC4A7000B236F3 /* Build configuration list for PBXNativeTarget "NotenRechner" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				201AC80A25BC4A7000B236F3 /* Debug */,
+				201AC80B25BC4A7000B236F3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		206ADDED26B454FF00443645 /* Build configuration list for PBXNativeTarget "WidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				206ADDEE26B454FF00443645 /* Debug */,
+				206ADDEF26B454FF00443645 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2043D9B52646CF100017189D /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/facebook/facebook-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.3.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCVersionGroup section */
+		201AC80325BC4A7000B236F3 /* Abi_Rechner.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				201AC80425BC4A7000B236F3 /* Abi_Rechner.xcdatamodel */,
+			);
+			currentVersion = 201AC80425BC4A7000B236F3 /* Abi_Rechner.xcdatamodel */;
+			path = Abi_Rechner.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 201AC7ED25BC4A6F00B236F3 /* Project object */;
+}

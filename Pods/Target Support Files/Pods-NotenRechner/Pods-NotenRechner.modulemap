@@ -1,0 +1,6 @@
+framework module Pods_NotenRechner {
+  umbrella header "Pods-NotenRechner-umbrella.h"
+
+  export *
+  module * { export * }
+}
