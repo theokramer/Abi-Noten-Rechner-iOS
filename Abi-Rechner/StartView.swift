@@ -126,7 +126,7 @@ struct StartView: View {
             user.userHasBasicPremium = user.basicPremium || Products.store.isProductPurchased(Products.basicSub) ? true : false
             user.userHasGoldPremium = user.premium || Products.store.isProductPurchased(Products.permanent) ||
             Products.store.isProductPurchased(Products.goldSub) ? true : false
-            print("na")
+            
             if !checkIfSaleIsActive() {
                 Color.saleColor = Color("Orange")
             }
