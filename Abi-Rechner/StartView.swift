@@ -52,7 +52,7 @@ struct StartView: View {
                             user.premium || Products.store.isProductPurchased(Products.permanent) ||
                             Products.store.isProductPurchased(Products.goldSub) {
                         
-                        SemesterNoteAusrechnen().onAppear {
+                         SemesterNoteAusrechnen().onAppear {
                             
                                 user.ausrechnen = true
                                     

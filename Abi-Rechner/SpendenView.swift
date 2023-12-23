@@ -11,6 +11,8 @@ import StoreKit
 struct SpendenView: View {
     @EnvironmentObject var user: UserStore
     @State var mode = 0
+    @State var offerSheet = false
+    @Environment(\.openURL) private var openURL
     
     @State var selectedColor = Color(UserDefaults.standard.colorForKey(key: "selectedColor") ?? UIColor(Color("Orange")))
     var body: some View {
@@ -121,174 +123,210 @@ struct SpendenView: View {
                        
                     }
                     
-                    HStack {
-                                                ZStack {
-                                                    Ellipse().foregroundColor(.saleColor)
-                                                    Image(systemName: "checkmark.seal").resizable().aspectRatio(contentMode: .fit)
-                                                        .frame(width: 20).foregroundColor(.white)
-                                                }.frame(width: 40, height: 40)
-                        Text(mode == 0 ? "Starte eine Probewoche" : "End-Note berechnen").padding(.leading, 10)
-                                                Spacer()
-                                                
-                                            }.padding(.horizontal, 15).padding(.top, 5)
+                    if mode != 0 {
+                        HStack {
+                                                    ZStack {
+                                                        Ellipse().foregroundColor(.saleColor)
+                                                        Image(systemName: "checkmark.seal").resizable().aspectRatio(contentMode: .fit)
+                                                            .frame(width: 20).foregroundColor(.white)
+                                                    }.frame(width: 40, height: 40)
+                            Text("End-Note berechnen").padding(.leading, 10)
+                                                    Spacer()
+                                                    
+                                                }.padding(.horizontal, 15).padding(.top, 5)
+                    }
                     
-                    VStack {
-                        Spacer()
-                        
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 40).foregroundColor(.saleColor).offset(y: 40)
-                            VStack {
-                                ZStack {
-                                    
-                                    BuyButtonRectangle()
-                                    HStack {
-                                        if checkIfSaleIsActive() {
-
-                                        Text("SALE").foregroundColor(.white)
-                                        Text(mode == 0 ? "0,99€ / Jahr" : "1,99€ / Jahr").foregroundColor(.white)
-                                        Text("statt").foregroundColor(.white)
-                                            Text(mode == 0 ? "1,49€ / Jahr" : "2,99€ / Jahr").foregroundColor(.white).strikethrough()
-                                        } else {
-                                            Text(mode == 0 ? "1,49€ / Jahr" : "2,99€ / Jahr").foregroundColor(.white)
-                                        }
-                                       
-                                    }
-                                    
-                                }.onTapGesture {
-                                    
-                                    Products.store.requestProducts { _, products  in
-                                        guard let products = products else {
-                                            return
-                                        }
-                                       var productIndex = 0
-                                        
-                                        if mode == 0 {
-                                            if products[0].productIdentifier == Products.basicSub {
-                                               productIndex = 0
-                                            }
-                                            
-                                            if products[1].productIdentifier == Products.basicSub {
-                                               productIndex = 1
-                                            }
-                                            if products[2].productIdentifier == Products.basicSub {
-                                               productIndex = 2
-                                            }
-                                        }
-                                        
-                                        if mode == 1 {
-                                            if products[0].productIdentifier == Products.goldSub {
-                                               productIndex = 0
-                                            }
-                                            
-                                            if products[1].productIdentifier == Products.goldSub {
-                                               productIndex = 1
-                                            }
-                                            if products[2].productIdentifier == Products.goldSub {
-                                               productIndex = 2
-                                            }
-                                        }
-                                        
-                                        Products.store.buyProduct(products[productIndex]) {_, productId in
-                                            
-                                            guard let productId = productId else {
-                                                return
-                                            }
-                                            
-                                            if Products.store.isProductPurchased(productId) {
-                                                if productId == Products.permanent || productId == Products.goldSub {
-                                                    user.premium = true
-                                                }
-                                                if productId == Products.basicSub {
-                                                    user.basicPremium = true
-                                                }
-                                                user.userHasBasicPremium = user.basicPremium ||
-                                                Products.store.isProductPurchased(Products.basicSub) ? true : false
-                                                user.userHasGoldPremium = user.premium ||
-                                                Products.store.isProductPurchased(Products.permanent) ||
-                                                Products.store.isProductPurchased(Products.goldSub) ? true : false
-                                            }
-                                        }
-                                    }
-                                }
-                                    
-                                if mode == 1 {
-                                Text("oder").font(.callout).foregroundColor(.white).multilineTextAlignment(.center).padding(.horizontal, 10)
-                                }
-                                
-                                if mode == 1 {
+                    /*if mode != 0 {
+                        HStack {
+                                                    ZStack {
+                                                        Ellipse().foregroundColor(.saleColor)
+                                                        Image(systemName: "checkmark.seal").resizable().aspectRatio(contentMode: .fit)
+                                                            .frame(width: 20).foregroundColor(.white)
+                                                    }.frame(width: 40, height: 40)
+                            Text("Starte eine Probewoche").padding(.leading, 10)
+                                                    Spacer()
+                                                    
+                                                }.padding(.horizontal, 15).padding(.top, 5)
+                    }*/
+                    
+                    if mode != 0 {
+                        HStack {
+                                                    ZStack {
+                                                        Ellipse().foregroundColor(.saleColor)
+                                                        Image(systemName: "exclamationmark").resizable().aspectRatio(contentMode: .fit)
+                                                            .frame(height: 20).foregroundColor(.white)
+                                                    }.frame(width: 40, height: 40)
+                            Text("Bis 31.1.24: GOLD-Abo zum Preis des BASIC-Abos für die ersten 500 User").padding(.leading, 10)
+                                                    Spacer()
+                                                    
+                                                }.padding(.horizontal, 15).padding(.top, 5)
+                    }
+                    
+                    VStack  {
+                            Spacer()
+                            
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 40).foregroundColor(.saleColor).offset(y: 40)
+                                VStack {
                                     ZStack {
+                                        
                                         BuyButtonRectangle()
                                         HStack {
                                             if checkIfSaleIsActive() {
-                                            Text("SALE").foregroundColor(.white)
-                                            Text("2,99€ / einmalig").foregroundColor(.white)
-                                            Text("statt").foregroundColor(.white)
-                                            Text("4,99€ / einmalig").foregroundColor(.white).strikethrough()
+                                                
+                                                Text(mode == 0 ? "4,99€ / Jahr" : "4,99€ / Jahr").foregroundColor(.white)
+                                                if mode != 0 {
+                                                    Text("statt").foregroundColor(.white)
+                                                    Text(mode == 0 ? "4,99€ / Jahr" : "6,99€ / Jahr").foregroundColor(.white).strikethrough()
+                                                }
+                                                
                                             } else {
-                                                Text("4,99€ / einmalig").foregroundColor(.white)
+                                                Text(mode == 0 ? "4,99€ / Jahr" : "6,99€ / Jahr").foregroundColor(.white)
                                             }
                                             
                                         }
-                                    }.onTapGesture {
-                                        Products.store.requestProducts { _, products  in
-                                            guard let products = products else {
-                                                return
-                                            }
-                                           var productIndex = 0
-                                            if products[0].productIdentifier == Products.permanent {
-                                               productIndex = 0
-                                            }
-                                            
-                                            if products[1].productIdentifier == Products.permanent {
-                                               productIndex = 1
-                                            }
-                                            if products[2].productIdentifier == Products.permanent {
-                                               productIndex = 2
-                                            }
-                                            
-                                            Products.store.buyProduct(products[productIndex]) {_, productId in
-                                                
-                                                guard let productId = productId else {
+
+                                    }
+                                
+                                    
+                                    
+                                    .onTapGesture {
+                                        if mode != 0 {
+                                            openURL(URL(string: "https://apps.apple.com/redeem?ctx=offercodes&id=1550466460&code=ABI2024")!)
+                                        } else {
+                                            Products.store.requestProducts { _, products  in
+                                                guard let products = products else {
                                                     return
                                                 }
+                                                var productIndex = 0
                                                 
-                                                if Products.store.isProductPurchased(productId) {
-                                                    if productId == Products.permanent || productId == Products.goldSub {
-                                                        user.premium = true
+                                                if mode == 0 {
+                                                    if products[0].productIdentifier == Products.basicSub {
+                                                        productIndex = 0
                                                     }
-                                                    if productId == Products.basicSub {
-                                                        user.basicPremium = true
+                                                    
+                                                    if products[1].productIdentifier == Products.basicSub {
+                                                        productIndex = 1
                                                     }
-                                                    user.userHasBasicPremium = user.basicPremium ||
-                                                    Products.store.isProductPurchased(Products.basicSub) ? true : false
-                                                    user.userHasGoldPremium = user.premium ||
-                                                    Products.store.isProductPurchased(Products.permanent) ||
-                                                    Products.store.isProductPurchased(Products.goldSub) ? true : false
+                                                    if products[2].productIdentifier == Products.basicSub {
+                                                        productIndex = 2
+                                                    }
+                                                }
+                                                
+                                                if mode == 1 {
+                                                    if products[0].productIdentifier == Products.goldSub {
+                                                        productIndex = 0
+                                                    }
+                                                    
+                                                    if products[1].productIdentifier == Products.goldSub {
+                                                        productIndex = 1
+                                                    }
+                                                    if products[2].productIdentifier == Products.goldSub {
+                                                        productIndex = 2
+                                                    }
+                                                }
+                                                
+                                                Products.store.buyProduct(products[productIndex]) {_, productId in
+                                                    
+                                                    guard let productId = productId else {
+                                                        return
+                                                    }
+                                                    
+                                                    if Products.store.isProductPurchased(productId) {
+                                                        if productId == Products.permanent || productId == Products.goldSub {
+                                                            user.premium = true
+                                                        }
+                                                        if productId == Products.basicSub {
+                                                            user.basicPremium = true
+                                                        }
+                                                        user.userHasBasicPremium = user.basicPremium ||
+                                                        Products.store.isProductPurchased(Products.basicSub) ? true : false
+                                                        user.userHasGoldPremium = user.premium ||
+                                                        Products.store.isProductPurchased(Products.permanent) ||
+                                                        Products.store.isProductPurchased(Products.goldSub) ? true : false
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        
+                                    }
+                                    
+                                    if mode == 1 {
+                                        Text("oder").font(.callout).foregroundColor(.white).multilineTextAlignment(.center).padding(.horizontal, 10)
+                                    }
+                                    
+                                    if mode == 1 {
+                                        ZStack {
+                                            BuyButtonRectangle()
+                                            HStack {
+                                                if checkIfSaleIsActive() {
+                                                    Text("7,99€ / einmalig").foregroundColor(.white)
+                                                } else {
+                                                    Text("7,99€ / einmalig").foregroundColor(.white)
+                                                }
+                                                
+                                            }
+                                        }.onTapGesture {
+                                            Products.store.requestProducts { _, products  in
+                                                guard let products = products else {
+                                                    return
+                                                }
+                                                var productIndex = 0
+                                                if products[0].productIdentifier == Products.permanent {
+                                                    productIndex = 0
+                                                }
+                                                
+                                                if products[1].productIdentifier == Products.permanent {
+                                                    productIndex = 1
+                                                }
+                                                if products[2].productIdentifier == Products.permanent {
+                                                    productIndex = 2
+                                                }
+                                                
+                                                Products.store.buyProduct(products[productIndex]) {_, productId in
+                                                    
+                                                    guard let productId = productId else {
+                                                        return
+                                                    }
+                                                    
+                                                    if Products.store.isProductPurchased(productId) {
+                                                        if productId == Products.permanent || productId == Products.goldSub {
+                                                            user.premium = true
+                                                        }
+                                                        if productId == Products.basicSub {
+                                                            user.basicPremium = true
+                                                        }
+                                                        user.userHasBasicPremium = user.basicPremium ||
+                                                        Products.store.isProductPurchased(Products.basicSub) ? true : false
+                                                        user.userHasGoldPremium = user.premium ||
+                                                        Products.store.isProductPurchased(Products.permanent) ||
+                                                        Products.store.isProductPurchased(Products.goldSub) ? true : false
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+                                    Link(destination: URL(string: "https://415414.8b.io/privacyAndTerms.html")!, label: {
+                                        Text("Privacy Policy & Terms Of Use").font(.callout).underline().padding(.top, 5).foregroundColor(.white)
+                                    })
+                                    Text("Kauf wiederherstellen").font(.callout).underline().padding(.top, 5)
+                                        .foregroundColor(.white).padding(.bottom, 20).onTapGesture {
+                                            Products.store.restorePurchases()
+                                            if user.premium || Products.store.isProductPurchased(Products.permanent) ||
+                                                Products.store.isProductPurchased(Products.goldSub) || user.basicPremium ||
+                                                Products.store.isProductPurchased(Products.basicSub) {
+                                                user.spendenClicked = false
+                                                user.simpleSuccess()
+                                            } else {
+                                                user.simpleError()
+                                            }
+                                        }
+                                    Spacer()
                                 }
-                                Link(destination: URL(string: "https://415414.8b.io/privacyAndTerms.html")!, label: {
-                                    Text("Privacy Policy & Terms Of Use").font(.callout).underline().padding(.top, 5).foregroundColor(.white)
-                                })
-                                Text("Kauf wiederherstellen").font(.callout).underline().padding(.top, 5)
-                                    .foregroundColor(.white).padding(.bottom, 20).onTapGesture {
-                                    Products.store.restorePurchases()
-                                    if user.premium || Products.store.isProductPurchased(Products.permanent) ||
-                                        Products.store.isProductPurchased(Products.goldSub) || user.basicPremium ||
-                                        Products.store.isProductPurchased(Products.basicSub) {
-                                        user.spendenClicked = false
-                                        user.simpleSuccess()
-                                    } else {
-                                        user.simpleError()
-                                    }
-                                }
-                                Spacer()
-                            }
-
-                        }.frame(width: screen.width, height: screen.height * 0.35).padding(.top, 10)
-                        
+                                
+                            }.frame(width: screen.width, height: screen.height * 0.28).padding(.top, 10)
+                            
+                        }
                     }
                 
             }
@@ -297,7 +335,6 @@ struct SpendenView: View {
         }
 
     }
-}
 
 struct SpendenView_Previews: PreviewProvider {
     static var previews: some View {

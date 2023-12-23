@@ -38,7 +38,7 @@ class UserStore: ObservableObject {
     }
     @Published var letztesSemester = false
     @Published var itemClicked = false
-    @Published var updateMode = false
+    @Published var updateMode = true
     @Published var reviewed = false
     @Published var aktuelleID = ""
     @Published var siteOpened = defaults.integer(forKey: "siteOpened") {
@@ -51,7 +51,7 @@ class UserStore: ObservableObject {
     @Published var showAd = false
     @Published var products = [SKProduct]()
     @Published var components = DateComponents()
-    @Published var differenceBetweenDates = ""
+    @Published var differenceBetweenDates = updateDifferenceBetweenDates()
     @Published var supportClicked = false
     @Published var sendEmail = false
     @Published var userHasBasicPremium = defaults.bool(forKey: "userHasBasicPremium") {
@@ -146,9 +146,15 @@ class UserStore: ObservableObject {
             defaults.set(aktuellerName, forKey: "aktuellerName")
         }
     }
-    @Published var aktuellerFaecherArray = fetchMap()
+    //fetchMap()
+    @Published var aktuellerFaecherArray:[FachItem] = fetchMap()
+    
     @Published var aktuellerAbiNotenArray = fetchMapAbi()
-    @Published var aktuellerNotenName = ""
+    @Published var aktuellerNotenName = defaults.string(forKey: "aktuellerNotenName") ?? "" {
+        didSet {
+            defaults.set(aktuellerNotenName, forKey: "aktuellerNotenName")
+        }
+    }
     
     @Published var verlaufPunkte = 0.0
     @Published var verlaufNote = 0.0
@@ -294,15 +300,19 @@ func sheduleNotificationEndeDesJahres() {
 
 func checkIfSaleIsActive() -> Bool {
     
-    let formatter = DateFormatter()
-    formatter.dateFormat = "dd/MM/yyyy"
-    let firstDate = formatter.date(from: "20/01/2022")
-    let secondDate = Date()
+/*
+ let formatter = DateFormatter()
+ formatter.dateFormat = "dd/MM/yyyy"
+ let firstDate = formatter.date(from: "20/01/2022")
+ let secondDate = Date()
 
-    if firstDate?.compare(secondDate) == .orderedDescending {
-        return true
-    }
-    return false
+ if firstDate?.compare(secondDate) == .orderedDescending {
+     return true
+ }
+ return false
+ */
+    
+    return true
     
 }
 

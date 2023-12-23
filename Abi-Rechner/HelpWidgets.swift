@@ -21,16 +21,15 @@ struct SaleView: View {
                     Image(systemName: "heart").resizable().aspectRatio(contentMode: .fit).frame(width: 25).foregroundColor(.white)
                     VStack {
                         HStack {
-                            Text("Wintersale bis zu 40%").foregroundColor(.white).bold()
+                            Text("Wintersale bis zu 30%").foregroundColor(.white).bold()
                             Spacer()
                         }
                         
                         HStack {
-                            //                                        Text("\(formatter.string(from: diffs) ?? "unknown")")
                             Text("Endet in \(user.differenceBetweenDates)").foregroundColor(.white).onAppear {
-                                updateDifferenceBetweenDates()
+                                user.differenceBetweenDates = updateDifferenceBetweenDates()
                             }.onReceive(timer) { _ in
-                                updateDifferenceBetweenDates()
+                                user.differenceBetweenDates = updateDifferenceBetweenDates()
                             }
                             Spacer()
                         }

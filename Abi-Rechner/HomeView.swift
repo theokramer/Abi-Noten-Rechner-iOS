@@ -38,7 +38,7 @@ struct HomeView: View {
                     TabletTopBar()
                 }
                 
-                if !checkIfSaleIsActive() && !tablet {
+                if checkIfSaleIsActive() && !tablet {
                     if !(user.userHasGoldPremium || user.userHasBasicPremium) {
                     SaleView()
                 }
@@ -331,7 +331,7 @@ struct BannerADView: UIViewRepresentable {
     }
     
     func makeUIView(context: UIViewRepresentableContext<BannerADView>) -> GADBannerView {
-        let banner = GADBannerView(adSize: kGADAdSizeBanner)
+        let banner = GADBannerView(adSize: GADAdSizeBanner)
         banner.adUnitID = bannerID
         banner.rootViewController = UIApplication.shared.windows.first?.rootViewController
         banner.load(GADRequest())

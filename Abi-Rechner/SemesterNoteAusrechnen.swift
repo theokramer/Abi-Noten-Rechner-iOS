@@ -21,7 +21,7 @@ struct SemesterNoteAusrechnen: View {
         user.simpleWarning()
     }
     
-    func checkIfTrue() {
+    func checkIfTrue(quick: Bool) {
         if calcPunkte() == nil {
             errorCalc = true
             user.simpleError()
@@ -31,13 +31,15 @@ struct SemesterNoteAusrechnen: View {
                     user.aktuelleNote = calcNote(punkte: calcPunkte()!)
                     user.aktuellePunkte = calcPunkte()!
                     user.aktuellerName = user.aktuellerNotenName
-                    user.updateMode = false
-                    user.schnitt = true
-                    user.siteOpened = 0
-                    user.ausrechnen = false
-                    user.showAd = true
-                    hideKeyboard()
-                    user.simpleSuccess()
+                    if !quick {
+                        user.updateMode = false
+                        user.schnitt = true
+                        user.siteOpened = 0
+                        user.ausrechnen = false
+                        user.showAd = true
+                        hideKeyboard()
+                        user.simpleSuccess()
+                    }
                     print("Hallo")
                     let note = Double(round(100*user.aktuelleNote)/100)
                     
@@ -76,9 +78,12 @@ struct SemesterNoteAusrechnen: View {
                 } catch {
                     print(error.localizedDescription)
                 }
-                user.ausrechnen = false
-                user.updateMode = false
-                user.simpleSuccess()
+                if !quick {
+                    user.ausrechnen = false
+                    user.updateMode = false
+                    user.simpleSuccess()
+                }
+
                 
             }
             
@@ -232,6 +237,11 @@ struct SemesterNoteAusrechnen: View {
         
     }
     
+    
+    
+    @Environment(\.scenePhase) var scenePhase
+
+    
     var body: some View {
         ZStack {
             Color.modeColor.onTapGesture {
@@ -294,6 +304,10 @@ struct SemesterNoteAusrechnen: View {
                     
                             }
                 }
+                if !(user.userHasGoldPremium) {
+                            BannerADView(bannerID: "ca-app-pub-3263827122305139/3463838331")
+                        .frame(width: screen.width, height: 60).edgesIgnoringSafeArea(.bottom)
+                        }
                 HStack {
                     VStack {
                         TextField("Name: z.B. 1. Semester", text: $user.aktuellerNotenName).font(.title3)
@@ -419,7 +433,7 @@ struct SemesterNoteAusrechnen: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 10).foregroundColor(.mainColor)
                         Text(user.updateMode ? "Aktualisieren" : "Ausrechnen").foregroundColor(.modeColor).font(tablet ? .title : .headline)
-                    }.frame(width: tablet ? 250 : 120, height: tablet ? 50 : 40).onTapGesture(perform: checkIfTrue).alert(isPresented: $errorCalc) {
+                    }.frame(width: tablet ? 250 : 120, height: tablet ? 50 : 40).onTapGesture(perform: {checkIfTrue(quick: false)}).alert(isPresented: $errorCalc) {
                         Alert(title: Text("Falsche Punktzahl"),
                               message: Text("Es sieht so aus als hättest du irgendwo eine falsche Punktzahl oder gar keine eingegeben"),
                               dismissButton: .cancel())
@@ -430,8 +444,9 @@ struct SemesterNoteAusrechnen: View {
             }
             
         }.onAppear {
-           
+            
         }
+        
     }
 }
 
@@ -458,6 +473,7 @@ struct AbiItem: Identifiable {
 }
 
 func fetchMap() -> [FachItem] {
+    print("ICH FETCHE!")
 var numbers: [FachItem] = []
     for i in 1..<15 {
         numbers.append(FachItem.init(id: UUID(), name: "", note: "", gewichtung: "1", position: Int64(i)))

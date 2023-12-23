@@ -11,9 +11,9 @@ import CoreData
 func countdown(date2: Date) -> DateComponents {
     var dateComponents = DateComponents()
     dateComponents.calendar = Calendar.current
-    dateComponents.year = 2022
+    dateComponents.year = 2024
     dateComponents.month = 1
-    dateComponents.day = 20
+    dateComponents.day = 31
     dateComponents.hour = 00
     
     let date: Date = dateComponents.date ?? Date()
@@ -23,7 +23,7 @@ func countdown(date2: Date) -> DateComponents {
     return components
 }
 
-func updateDifferenceBetweenDates() {
+func updateDifferenceBetweenDates() -> String{
     let day = (countdown(date2: Date()).day ?? 0)
     let hour = (countdown(date2: Date()).hour ?? 0)
     let minute = (countdown(date2: Date()).minute ?? 0)
@@ -53,7 +53,7 @@ func updateDifferenceBetweenDates() {
         
     }
     secondString += String(second)
-    UserStore().differenceBetweenDates =  "\(dayString):\(hourString):\(minuteString):\(secondString)"
+    return "\(dayString):\(hourString):\(minuteString):\(secondString)"
 }
 
 func fetchAllSemesterNoten(viewContext: NSManagedObjectContext) -> [SemesternotenItem]? {

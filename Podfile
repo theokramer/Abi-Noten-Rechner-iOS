@@ -7,6 +7,14 @@ target 'NotenRechner' do
 
   # Pods for NotenRechner
 pod 'Google-Mobile-Ads-SDK'
-pod 'Updates'
+
+
+end
+
+target 'WidgetExtension' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for WidgetExtension
 
 end

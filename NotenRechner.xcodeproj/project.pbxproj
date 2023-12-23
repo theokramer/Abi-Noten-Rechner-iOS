@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -37,6 +37,7 @@
 		207D813625C47DF300ADD682 /* Fach+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207D813225C47DF300ADD682 /* Fach+CoreDataClass.swift */; };
 		207D813725C47DF300ADD682 /* Fach+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207D813325C47DF300ADD682 /* Fach+CoreDataProperties.swift */; };
 		207D814325C4A2F700ADD682 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 207D814225C4A2F700ADD682 /* StoreKit.framework */; };
+		4FAC0928E1C4CA9A35848EB3 /* Pods_WidgetExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA252F6FA1D2E248FEF2F929 /* Pods_WidgetExtension.framework */; };
 		7A141AFF74BDC4C7378B75E5 /* Pods_NotenRechner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CAB817A3126BE728D04E909 /* Pods_NotenRechner.framework */; };
 /* End PBXBuildFile section */
 
@@ -104,9 +105,12 @@
 		207D815E25C551AC00ADD682 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
 		20DDBFBC27607CE500E80658 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Widget.strings; sourceTree = "<group>"; };
 		20FD2A3727AEC84D00F8AF40 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
+		28FB64D65452EFAAF210EBD3 /* Pods-WidgetExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WidgetExtension.debug.xcconfig"; path = "Target Support Files/Pods-WidgetExtension/Pods-WidgetExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		3CAB817A3126BE728D04E909 /* Pods_NotenRechner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NotenRechner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FFA8675C129B6C08EDA65CE /* Pods-NotenRechner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotenRechner.debug.xcconfig"; path = "Target Support Files/Pods-NotenRechner/Pods-NotenRechner.debug.xcconfig"; sourceTree = "<group>"; };
 		584A2936A1CDC5E5CBCA1B64 /* Pods-NotenRechner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotenRechner.release.xcconfig"; path = "Target Support Files/Pods-NotenRechner/Pods-NotenRechner.release.xcconfig"; sourceTree = "<group>"; };
+		767DD0BDB69F0F33138F993C /* Pods-WidgetExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WidgetExtension.release.xcconfig"; path = "Target Support Files/Pods-WidgetExtension/Pods-WidgetExtension.release.xcconfig"; sourceTree = "<group>"; };
+		FA252F6FA1D2E248FEF2F929 /* Pods_WidgetExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WidgetExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +129,7 @@
 			files = (
 				206ADDE026B454FE00443645 /* SwiftUI.framework in Frameworks */,
 				206ADDDE26B454FD00443645 /* WidgetKit.framework in Frameworks */,
+				4FAC0928E1C4CA9A35848EB3 /* Pods_WidgetExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -220,6 +225,7 @@
 				3CAB817A3126BE728D04E909 /* Pods_NotenRechner.framework */,
 				206ADDDD26B454FD00443645 /* WidgetKit.framework */,
 				206ADDDF26B454FD00443645 /* SwiftUI.framework */,
+				FA252F6FA1D2E248FEF2F929 /* Pods_WidgetExtension.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -237,6 +243,8 @@
 			children = (
 				4FFA8675C129B6C08EDA65CE /* Pods-NotenRechner.debug.xcconfig */,
 				584A2936A1CDC5E5CBCA1B64 /* Pods-NotenRechner.release.xcconfig */,
+				28FB64D65452EFAAF210EBD3 /* Pods-WidgetExtension.debug.xcconfig */,
+				767DD0BDB69F0F33138F993C /* Pods-WidgetExtension.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -252,9 +260,9 @@
 				201AC7F125BC4A6F00B236F3 /* Sources */,
 				201AC7F225BC4A6F00B236F3 /* Frameworks */,
 				201AC7F325BC4A6F00B236F3 /* Resources */,
-				08BF5C288EC2CD0C6611C879 /* [CP] Embed Pods Frameworks */,
 				206ADDF026B454FF00443645 /* Embed App Extensions */,
 				20FD2A3627AEB94D00F8AF40 /* ShellScript */,
+				DA78F1AE080C849D797BE818 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -270,6 +278,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 206ADDED26B454FF00443645 /* Build configuration list for PBXNativeTarget "WidgetExtension" */;
 			buildPhases = (
+				D56AEB0AB5E38F75025363CE /* [CP] Check Pods Manifest.lock */,
 				206ADDD826B454FD00443645 /* Sources */,
 				206ADDD926B454FD00443645 /* Frameworks */,
 				206ADDDA26B454FD00443645 /* Resources */,
@@ -344,23 +353,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		08BF5C288EC2CD0C6611C879 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-NotenRechner/Pods-NotenRechner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-NotenRechner/Pods-NotenRechner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-NotenRechner/Pods-NotenRechner-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		20FD2A3627AEB94D00F8AF40 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -398,6 +390,45 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D56AEB0AB5E38F75025363CE /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-WidgetExtension-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DA78F1AE080C849D797BE818 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-NotenRechner/Pods-NotenRechner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-NotenRechner/Pods-NotenRechner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-NotenRechner/Pods-NotenRechner-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -594,17 +625,17 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = NotenRechner.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"Abi-Rechner/Preview Content\"";
 				DEVELOPMENT_TEAM = 67AYJ24F97;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Abi-Rechner/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.130;
+				MARKETING_VERSION = 2.150;
 				PRODUCT_BUNDLE_IDENTIFIER = "tk.Abi-Rechner";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -623,17 +654,17 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = NotenRechner.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"Abi-Rechner/Preview Content\"";
 				DEVELOPMENT_TEAM = 67AYJ24F97;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Abi-Rechner/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.130;
+				MARKETING_VERSION = 2.150;
 				PRODUCT_BUNDLE_IDENTIFIER = "tk.Abi-Rechner";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -643,6 +674,7 @@
 		};
 		206ADDEE26B454FF00443645 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 28FB64D65452EFAAF210EBD3 /* Pods-WidgetExtension.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
@@ -668,6 +700,7 @@
 		};
 		206ADDEF26B454FF00443645 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 767DD0BDB69F0F33138F993C /* Pods-WidgetExtension.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
