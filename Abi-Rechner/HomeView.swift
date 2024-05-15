@@ -38,11 +38,11 @@ struct HomeView: View {
                     TabletTopBar()
                 }
                 
-                if checkIfSaleIsActive() && !tablet {
+                /*if checkIfSaleIsActive() && !tablet {
                     if !(user.userHasGoldPremium || user.userHasBasicPremium) {
                     SaleView()
                 }
-                }
+                }*/
                 
                 if user.aktuelleNote != 0 {
                     VStack {

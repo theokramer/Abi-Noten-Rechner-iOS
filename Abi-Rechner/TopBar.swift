@@ -115,11 +115,11 @@ struct TabletTopBar: View {
                 Spacer()
             }
             Rectangle().frame(width: screen.width, height: 0.5).foregroundColor(.gray).padding(.top, 10)
-            if checkIfSaleIsActive() {
+            /*if checkIfSaleIsActive() {
                 if !(user.userHasBasicPremium || user.userHasGoldPremium) {
                 //SaleView()
             }
-            }
+            }*/
         }
 
     }

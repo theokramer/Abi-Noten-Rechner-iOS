@@ -625,7 +625,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = NotenRechner.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Abi-Rechner/Preview Content\"";
 				DEVELOPMENT_TEAM = 67AYJ24F97;
 				ENABLE_PREVIEWS = YES;
@@ -635,7 +635,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.150;
+				MARKETING_VERSION = 2.170;
 				PRODUCT_BUNDLE_IDENTIFIER = "tk.Abi-Rechner";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -654,7 +654,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = NotenRechner.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Abi-Rechner/Preview Content\"";
 				DEVELOPMENT_TEAM = 67AYJ24F97;
 				ENABLE_PREVIEWS = YES;
@@ -664,7 +664,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.150;
+				MARKETING_VERSION = 2.170;
 				PRODUCT_BUNDLE_IDENTIFIER = "tk.Abi-Rechner";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

@@ -182,7 +182,7 @@ extension Color {
     static let modeColor = Color("modeColor")
     static let modeColorSwitch = Color("modeColorSwitch")
     static let mainColor2 = Color("Orange")
-    static var saleColor = Color("Sale Color")
+    static var saleColor = Color.accentColor
 }
 
 func sheduleNotificationHalbjahr() {

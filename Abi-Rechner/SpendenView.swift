@@ -136,7 +136,7 @@ struct SpendenView: View {
                                                 }.padding(.horizontal, 15).padding(.top, 5)
                     }
                     
-                    /*if mode != 0 {
+                    if mode != 0 {
                         HStack {
                                                     ZStack {
                                                         Ellipse().foregroundColor(.saleColor)
@@ -147,20 +147,8 @@ struct SpendenView: View {
                                                     Spacer()
                                                     
                                                 }.padding(.horizontal, 15).padding(.top, 5)
-                    }*/
-                    
-                    if mode != 0 {
-                        HStack {
-                                                    ZStack {
-                                                        Ellipse().foregroundColor(.saleColor)
-                                                        Image(systemName: "exclamationmark").resizable().aspectRatio(contentMode: .fit)
-                                                            .frame(height: 20).foregroundColor(.white)
-                                                    }.frame(width: 40, height: 40)
-                            Text("Bis 31.1.24: GOLD-Abo zum Preis des BASIC-Abos für die ersten 500 User").padding(.leading, 10)
-                                                    Spacer()
-                                                    
-                                                }.padding(.horizontal, 15).padding(.top, 5)
                     }
+                    
                     
                     VStack  {
                             Spacer()
@@ -172,7 +160,7 @@ struct SpendenView: View {
                                         
                                         BuyButtonRectangle()
                                         HStack {
-                                            if checkIfSaleIsActive() {
+                                            /*if checkIfSaleIsActive() {
                                                 
                                                 Text(mode == 0 ? "4,99€ / Jahr" : "4,99€ / Jahr").foregroundColor(.white)
                                                 if mode != 0 {
@@ -181,8 +169,11 @@ struct SpendenView: View {
                                                 }
                                                 
                                             } else {
-                                                Text(mode == 0 ? "4,99€ / Jahr" : "6,99€ / Jahr").foregroundColor(.white)
-                                            }
+                                                
+                                            }*/
+                                            Text(mode == 0 ? "1,99€ / Jahr" : "2,99€ / Jahr").foregroundColor(.white)
+                                            Text("statt").foregroundColor(.white)
+                                            Text(mode == 0 ? "3,99€ / Jahr" : "4,99€ / Jahr").foregroundColor(.white).strikethrough()
                                             
                                         }
 
@@ -191,9 +182,7 @@ struct SpendenView: View {
                                     
                                     
                                     .onTapGesture {
-                                        if mode != 0 {
-                                            openURL(URL(string: "https://apps.apple.com/redeem?ctx=offercodes&id=1550466460&code=ABI2024")!)
-                                        } else {
+                                         
                                             Products.store.requestProducts { _, products  in
                                                 guard let products = products else {
                                                     return
@@ -246,7 +235,7 @@ struct SpendenView: View {
                                                         Products.store.isProductPurchased(Products.goldSub) ? true : false
                                                     }
                                                 }
-                                            }
+                                            
                                         }
                                         
                                     }
@@ -260,9 +249,13 @@ struct SpendenView: View {
                                             BuyButtonRectangle()
                                             HStack {
                                                 if checkIfSaleIsActive() {
-                                                    Text("7,99€ / einmalig").foregroundColor(.white)
+                                                    Text("4,99€ / Jahr").foregroundColor(.white)
+                                                    Text("statt").foregroundColor(.white)
+                                                    Text("5,99€ / einmalig").foregroundColor(.white).strikethrough()
                                                 } else {
-                                                    Text("7,99€ / einmalig").foregroundColor(.white)
+                                                    Text("4,99€ / Jahr").foregroundColor(.white)
+                                                    Text("statt").foregroundColor(.white)
+                                                    Text("5,99€ / einmalig").foregroundColor(.white).strikethrough()
                                                 }
                                                 
                                             }
