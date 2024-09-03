@@ -17,6 +17,7 @@ struct AbiRechner: App {
 
     @Environment(\.scenePhase) var phase
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @StateObject var user = UserStore()
     
     @State var activeScene = -1
     
@@ -98,7 +99,7 @@ struct AbiRechner: App {
     var body: some Scene {
         WindowGroup {
             StartView(activeScene: $activeScene).accentColor(Color(selectedColor))
-                .environment(\.managedObjectContext, persistenceController.container.viewContext).environmentObject(UserStore()).onAppear {
+                .environment(\.managedObjectContext, persistenceController.container.viewContext).environmentObject(user).onAppear {
                     if Products.store.isProductPurchased(Products.basicSub) {
                         UserStore().basicPremium = true
                     } else {
@@ -116,6 +117,7 @@ struct AbiRechner: App {
             switch newPhase {
             case .active :
                 print("App in active")
+                restoreTemporaryData()
                 if shortcutItemToProcess?.localizedTitle == "Neu" {
                 activeScene = 0
                     print("ActiveScene: \(activeScene)")
@@ -128,6 +130,7 @@ struct AbiRechner: App {
 
             case .inactive:
                  print("App is inactive")
+                saveTemporaryData()
                 
             case .background:
                 print("App in Back ground")
@@ -138,6 +141,50 @@ struct AbiRechner: App {
             
         }
     }
+    private func saveTemporaryData() {
+        // Sicherstellen, dass der aktuelle FächerArray und der Notenname vorhanden sind
+        guard !user.aktuellerFaecherArray.isEmpty else {
+            print("Keine Fächer vorhanden, die gespeichert werden können.")
+            return
+        }
+
+        // FächerArray serialisieren und speichern
+        do {
+            let facherData = try JSONEncoder().encode(user.aktuellerFaecherArray)
+            UserDefaults.standard.set(facherData, forKey: "tempFaecherArray")
+        } catch {
+            print("Fehler beim Speichern des FächerArrays: \(error.localizedDescription)")
+        }
+
+        // Notennamen speichern
+        UserDefaults.standard.set(user.aktuellerNotenName, forKey: "tempNotenName")
+
+        print("Temporäre Daten (FächerArray und Notenname) wurden gespeichert.")
+    }
+
+    private func restoreTemporaryData() {
+        // Wiederherstellen des gespeicherten Notennamens
+        if let gespeicherterNotenName = UserDefaults.standard.string(forKey: "tempNotenName"), !gespeicherterNotenName.isEmpty {
+            user.aktuellerNotenName = gespeicherterNotenName
+            print("Wiederhergestellter Notenname: \(user.aktuellerNotenName)")
+        } else {
+            print("Kein gespeicherter Notenname gefunden.")
+        }
+
+        // Wiederherstellen des FächerArrays
+        if let facherData = UserDefaults.standard.data(forKey: "tempFaecherArray") {
+            do {
+                let gespeicherterFaecherArray = try JSONDecoder().decode([FachItem].self, from: facherData)
+                user.aktuellerFaecherArray = gespeicherterFaecherArray
+                print("Wiederhergestellter FächerArray: \(user.aktuellerFaecherArray)")
+            } catch {
+                print("Fehler beim Wiederherstellen des FächerArrays: \(error.localizedDescription)")
+            }
+        } else {
+            print("Kein gespeicherter FächerArray gefunden.")
+        }
+    }
+
 }
 
 var activeScreen: [String: NSSecureCoding] = [:]

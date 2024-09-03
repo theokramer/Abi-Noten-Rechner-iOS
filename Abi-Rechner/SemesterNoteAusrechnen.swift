@@ -14,6 +14,7 @@ struct SemesterNoteAusrechnen: View {
     @State var showDeleteAlert = false
     @State var errorCalc = false
     @EnvironmentObject var user: UserStore
+    @Environment(\.scenePhase) var scenePhase
     
     func warnUser() {
         showDeleteAlert = true
@@ -238,8 +239,6 @@ struct SemesterNoteAusrechnen: View {
     }
     
     
-    
-    @Environment(\.scenePhase) var scenePhase
 
     
     var body: some View {
@@ -251,6 +250,7 @@ struct SemesterNoteAusrechnen: View {
                 if tablet {
                     TabletTopBar()
                 } else {
+                    
                             VStack {
                                 ZStack {
                                     HStack {
@@ -304,10 +304,6 @@ struct SemesterNoteAusrechnen: View {
                     
                             }
                 }
-                if !(user.userHasGoldPremium) {
-                            BannerADView(bannerID: "ca-app-pub-3263827122305139/3463838331")
-                        .frame(width: screen.width, height: 60).edgesIgnoringSafeArea(.bottom)
-                        }
                 HStack {
                     VStack {
                         TextField("Name: z.B. 1. Semester", text: $user.aktuellerNotenName).font(.title3)
@@ -439,15 +435,32 @@ struct SemesterNoteAusrechnen: View {
                               dismissButton: .cancel())
                     }
                     Spacer()
-                }.padding(.top)
+                }.padding([.top, .bottom])
+                
                 Spacer()
+                if !(user.userHasGoldPremium) {
+                            BannerADView(bannerID: "ca-app-pub-3263827122305139/3463838331")
+                        .frame(width: screen.width, height: 60).edgesIgnoringSafeArea(.bottom)
+                        }
             }
             
         }.onAppear {
             
+        }.onChange(of: scenePhase) { newPhase in
+            if newPhase == .inactive {
+                print("Inaktiv")
+                // Rufe die Speicherfunktion auf, wenn die App in den Hintergrund geht
+                handleAppGoesToBackground()
+            }
         }
         
     }
+    private func handleAppGoesToBackground() {
+            guard let punkte = calcPunkte() else { return } // Berechne die Punkte
+            let note = calcNote(punkte: punkte) // Berechne die Note
+            _ = saveSemesterNoten(punkte: punkte, note: note) // Speichere die Note
+            print("Daten wurden im Hintergrund gespeichert.")
+        }
 }
 
 struct SemesterNoteAusrechnen_Previews: PreviewProvider {
@@ -458,7 +471,7 @@ struct SemesterNoteAusrechnen_Previews: PreviewProvider {
     }
 }
 
-struct FachItem: Identifiable {
+struct FachItem: Identifiable, Codable {
     var id: UUID
     var name: String
     var note: String

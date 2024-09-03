@@ -172,8 +172,6 @@ struct SpendenView: View {
                                                 
                                             }*/
                                             Text(mode == 0 ? "1,99€ / Jahr" : "2,99€ / Jahr").foregroundColor(.white)
-                                            Text("statt").foregroundColor(.white)
-                                            Text(mode == 0 ? "3,99€ / Jahr" : "4,99€ / Jahr").foregroundColor(.white).strikethrough()
                                             
                                         }
 
@@ -249,13 +247,9 @@ struct SpendenView: View {
                                             BuyButtonRectangle()
                                             HStack {
                                                 if checkIfSaleIsActive() {
-                                                    Text("4,99€ / Jahr").foregroundColor(.white)
-                                                    Text("statt").foregroundColor(.white)
-                                                    Text("5,99€ / einmalig").foregroundColor(.white).strikethrough()
+                                                    Text("4,99€ / einmalig").foregroundColor(.white)
                                                 } else {
-                                                    Text("4,99€ / Jahr").foregroundColor(.white)
-                                                    Text("statt").foregroundColor(.white)
-                                                    Text("5,99€ / einmalig").foregroundColor(.white).strikethrough()
+                                                    Text("4,99€ / einmalig").foregroundColor(.white)
                                                 }
                                                 
                                             }
@@ -494,12 +488,9 @@ struct BasicPremiumView: View {
                             BuyButtonRectangle()
                             HStack {
                                 if checkIfSaleIsActive() {
-                                    Text("SALE").foregroundColor(.white)
                                     Text("1,99€ / Jahr").foregroundColor(.white)
-                                    Text("statt").foregroundColor(.white)
-                                    Text("2,99€ / Jahr").foregroundColor(.white).strikethrough()
                                 } else {
-                                    Text("2,99€ / Jahr").foregroundColor(.white)
+                                    Text("1,99€ / Jahr").foregroundColor(.white)
                                 }
 
                             }
@@ -553,9 +544,6 @@ struct BasicPremiumView: View {
                             BuyButtonRectangle()
                             HStack {
                                 if checkIfSaleIsActive() {
-                                    Text("SALE").foregroundColor(.white)
-                                    Text("2,99€ / einmalig").foregroundColor(.white)
-                                    Text("statt").foregroundColor(.white)
                                     Text("4,99€ / einmalig").foregroundColor(.white).strikethrough()
                                 } else {
                                     Text("4,99€ / einmalig").foregroundColor(.white)
