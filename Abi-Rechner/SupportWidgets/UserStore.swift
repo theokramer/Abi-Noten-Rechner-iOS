@@ -135,11 +135,18 @@ class UserStore: ObservableObject {
         }
     }
     
+    func refreshSemesterArray() {
+           // zwingt SwiftUI, das Array neu zu erkennen
+           objectWillChange.send()
+       }
+    
     @Published var verlaufPunkte = 0.0
     @Published var verlaufNote = 0.0
     @Published var verlaufName = ""
     @Published var verlaufFaecherArray = fetchMap()
     @Published var verlaufNotenName = ""
+    
+    
     @Published var reviewCount: Int = defaults.integer(forKey: "reviewCount") {
         didSet {
             defaults.set(reviewCount, forKey: "reviewCount")

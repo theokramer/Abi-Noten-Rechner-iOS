@@ -29,13 +29,23 @@ extension Date {
 
 
 
-struct SemesternotenItem: Identifiable {
+struct SemesternotenItem: Identifiable, Hashable, Equatable {
     var id: UUID
     var name: String
     var semesterNote: Double
     var semesterPunkte: Double
     var date: Date
+
+    // Hashable & Equatable automatisch über alle Properties
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    static func ==(lhs: SemesternotenItem, rhs: SemesternotenItem) -> Bool {
+        lhs.id == rhs.id
+    }
 }
+
 
 
 func countdown(date2: Date) -> DateComponents {

@@ -339,6 +339,7 @@ struct BuyButtonRectangle: View {
 }
 
 struct GoldPremiumView: View {
+    @EnvironmentObject var user: UserStore   // <<< hinzufügen
     @Binding var selectedColor:Color
     var body: some View {
         VStack {
@@ -355,6 +356,7 @@ struct GoldPremiumView: View {
                     let color = UIColor(selectedColor)
                     UserDefaults.standard.setColor(color: color, forKey: "selectedColor")
                     Color.mainColor = selectedColor
+                    user.objectWillChange.send()  // <<< erzwingt Redraw
                 })
 
             Text("App Icon auswählen").font(.headline).padding(.top).foregroundColor(.modeColorSwitch)

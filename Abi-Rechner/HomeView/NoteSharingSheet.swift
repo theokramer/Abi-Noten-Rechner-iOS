@@ -82,7 +82,7 @@ struct NoteSharingSheet: View {
                     .foregroundColor(.modeColor)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.mainColor2))
+                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.mainColor))
                     .font(.headline)
             }
             .padding(.horizontal)
@@ -123,7 +123,7 @@ struct NoteSelectionRow: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 10)
-                .foregroundColor(selected ? .mainColor2 : .mainColor2.opacity(0.1))
+                .foregroundColor(selected ? .mainColor : .mainColor.opacity(0.1))
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(selected ? Color.mainColor : Color.gray, lineWidth: 1)
