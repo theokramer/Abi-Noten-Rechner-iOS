@@ -93,8 +93,6 @@ struct StartView: View {
                             user.userHasGoldPremium = user.premium || Products.store.isProductPurchased(Products.permanent) ||
                             Products.store.isProductPurchased(Products.goldSub) ? true : false
                         }
-                    }).sheet(isPresented: $user.supportClicked, content: {
-                        SupportView()
                     })
                
             }

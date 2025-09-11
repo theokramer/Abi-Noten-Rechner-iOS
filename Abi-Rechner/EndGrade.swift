@@ -124,9 +124,7 @@ struct AbiClicked: View {
                     }
                 }
                 .listStyle(.insetGrouped)
-                .sheet(isPresented: $showShareSheet) {
-                    ShareSheet(items: [shareText()])
-                }
+                
                 .onAppear {
                     updateEndnote()
                 }

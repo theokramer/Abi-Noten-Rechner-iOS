@@ -50,11 +50,20 @@ struct HomeView: View {
                                 }
                             }
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                // Löschen-Button
                                 Button(role: .destructive) {
                                     deleteSemester(item)
                                 } label: {
                                     Label("Löschen", systemImage: "trash")
                                 }
+
+                                // Teilen-Button
+                                Button() {
+                                    shareNote(item: item)
+                                } label: {
+                                    Label("Teilen", systemImage: "square.and.arrow.up")
+                                }
+                                .tint(.blue)
                             }
                         }
                         NewSemesterButton(user: user)
@@ -66,54 +75,42 @@ struct HomeView: View {
                     EndnoteSection(user: user)
                 }
                 
-                // MARK: - Premium Hinweis Section
-                if !user.userHasGoldPremium {
-                    Section {
-                        Button(action: { user.spendenClicked = true }) {
-                            Text("Premium freischalten")
-                                .font(.footnote.weight(.semibold))
-                                .padding(10)
-                                .frame(maxWidth: .infinity)
-                                .background(Color.mainColor.opacity(0.1))
-                                .foregroundColor(.mainColor)
-                                .cornerRadius(12)
-                        }
-                        .padding(.vertical, 4)
-                    }
-                } else {
-                    
-                            Section {
-                                Text("Premium Bereich")
-                                    .font(.footnote)
-                                    .foregroundColor(.secondary)
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    .padding(.vertical, 8)
-                            }.onTapGesture {
-                                user.spendenClicked = true
-                            }
-                        
-                }
+                
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Abi Noten Rechner")
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    Button(action: { viewModel.noteTeilenClicked = true }) {
-                        Image(systemName: "square.and.arrow.up")
-                            .foregroundColor(.mainColor)
-                    }
+                    
+                        Button(action: { user.spendenClicked = true }) {
+                            Image(systemName: "crown.fill") // professionelles Premium-Icon
+                                .font(.title3)
+                                .foregroundColor(.mainColor)
+                                .shadow(radius: 1)
+                        }
+                    
                 }
             }
-            .sheet(isPresented: $viewModel.noteTeilenClicked) {
-                NoteSharingSheet(viewModel: viewModel)
-                    .environmentObject(user)
-            }
+            
             .onAppear {
                 viewModel.loadSemesterNoten(context: viewContext)
                 user.semesterArray = viewModel.semesterNoten
             }
         }
     }
+    private func shareNote(item: SemesternotenItem) {
+        let text = """
+        Hi, ich habe gerade das \(item.name) mit dem Abi Noten Rechner ausgerechnet. 
+        Ich habe einen Notenschnitt von \(String(format: "%.2f", item.semesterNote)). 
+        Wenn du auch deine Noten ausrechnen möchtest, kannst du dir den Abi Noten Rechner kostenlos im App Store herunterladen: https://apps.apple.com/us/app/abi-noten-rechner/id1550466460
+        """
+        
+        let av = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+        UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
+    }
+
+
+
     
     // MARK: - Helpers
     private var currentSemester: SemesternotenItem? {
@@ -269,12 +266,12 @@ struct EndnoteSection: View {
         VStack(spacing: 16) {
             if user.userHasGoldPremium {
                 NavigationLink(destination: AbiClicked().environmentObject(user)) {
-                    FeatureCard(title: "Endnote berechnen", icon: "star.circle.fill", active: true)
+                    FeatureCard(title: "Endnote berechnen", icon: "graduationcap.fill", active: true)
                 }
                 .buttonStyle(PlainButtonStyle())
             } else {
                 Button(action: { user.spendenClicked = true }) {
-                    FeatureCard(title: "Endnote berechnen", icon: "star.circle.fill", active: false)
+                    FeatureCard(title: "Endnote berechnen", icon: "graduationcap.fill", active: false)
                 }
             }
         }
@@ -304,7 +301,7 @@ struct SemesterListHeader: View {
 
 struct NewSemesterButton: View {
     @ObservedObject var user: UserStore
-    @State private var newSemesterSelected: Bool = false
+    @State private var navigateToSemester = false
 
     private func resetForNewSemester() {
         user.ausrechnen = true
@@ -316,17 +313,14 @@ struct NewSemesterButton: View {
 
     var body: some View {
         if user.userHasGoldPremium {
-            NavigationLink(
-                destination: SemesterNoteAusrechnen().environmentObject(user),
-                isActive: $newSemesterSelected
-            ) {
+            NavigationLink(destination: SemesterNoteAusrechnen().environmentObject(user), isActive: $navigateToSemester) {
                 FeatureCard(title: "Neues Semester anlegen", icon: "plus.circle.fill", active: true, showChevron: false)
+                    .onTapGesture {
+                        resetForNewSemester()
+                        navigateToSemester = true
+                    }
             }
             .buttonStyle(PlainButtonStyle())
-            .onTapGesture {
-                resetForNewSemester()
-                newSemesterSelected = true
-            }
         } else {
             Button(action: { user.spendenClicked = true }) {
                 FeatureCard(title: "Neues Semester anlegen", icon: "plus.circle.fill", active: false, showChevron: false)
@@ -334,6 +328,7 @@ struct NewSemesterButton: View {
         }
     }
 }
+
 
 
 struct HeaderRow: View {
@@ -404,6 +399,7 @@ struct EditSemesterButton: View {
 
 struct EmptySemesterCard: View {
     @ObservedObject var user: UserStore
+    @State private var navigateToSemester = false
 
     private func resetForNewSemester() {
         user.ausrechnen = true
@@ -414,14 +410,14 @@ struct EmptySemesterCard: View {
     }
 
     var body: some View {
-        
-            
-
-            NavigationLink(destination: SemesterNoteAusrechnen().environmentObject(user)) {
-                FeatureCard(title: "Neues Semester anlegen", icon: "plus.circle.fill", active: true)
-            }
-            .onTapGesture { resetForNewSemester() }
-        
+        NavigationLink(destination: SemesterNoteAusrechnen().environmentObject(user), isActive: $navigateToSemester) {
+            FeatureCard(title: "Neues Semester anlegen", icon: "plus.circle.fill", active: true)
+                .onTapGesture {
+                    resetForNewSemester()
+                    navigateToSemester = true
+                }
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
