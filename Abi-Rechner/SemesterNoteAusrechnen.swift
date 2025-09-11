@@ -8,460 +8,288 @@
 import SwiftUI
 import CoreData
 import WidgetKit
-import GoogleMobileAds
 
+@available(iOS 15.0, *)
 struct SemesterNoteAusrechnen: View {
-    @State var showDeleteAlert = false
-    @State var errorCalc = false
+    @Environment(\.dismiss) private var dismiss // <- hinzufügen
+    @State private var showDeleteAlert = false
+    @State private var errorCalc = false
     @EnvironmentObject var user: UserStore
+    @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.scenePhase) var scenePhase
+
+    // MARK: - Funktionen
     
-    func warnUser() {
+    private func warnUser() {
         showDeleteAlert = true
         hideKeyboard()
         user.simpleWarning()
     }
     
-    func checkIfTrue(quick: Bool) {
-        if calcPunkte() == nil {
-            errorCalc = true
-            user.simpleError()
-        } else {
-            if calcNote(punkte: calcPunkte()!) > 0 {
-                if saveSemesterNoten(punkte: calcPunkte()!, note: calcNote(punkte: calcPunkte()!)) {
-                    user.aktuelleNote = calcNote(punkte: calcPunkte()!)
-                    user.aktuellePunkte = calcPunkte()!
-                    user.aktuellerName = user.aktuellerNotenName
-                    if !quick {
-                        user.updateMode = false
-                        user.schnitt = true
-                        user.siteOpened = 0
-                        user.ausrechnen = false
-                        user.showAd = true
-                        hideKeyboard()
-                        user.simpleSuccess()
-                    }
-                    print("Hallo")
-                    let note = Double(round(100*user.aktuelleNote)/100)
-                    
-                    if let userDefaults = UserDefaults(suiteName: "group.notenRechner.widgetcache") {
-                        userDefaults.setValue(note, forKey: "text")
-                    }
-                    
-                    WidgetCenter.shared.reloadAllTimelines()
-                    print("Geschafft")
-                    
-                }
-                
-            } else {
-                let semesterRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Semesternote")
-                do {
-                    let results = try viewContext.fetch(semesterRequest)
-                    if !results.isEmpty {
-                        for i in results {
-                            if let result = i as? NSManagedObject {
-                                if result.value(forKey: "id") != nil {
-                                    guard let thisID = result.value(forKey: "id") as? UUID else {
-                                        return
-                                    }
-                                    if thisID.uuidString == user.aktuelleID {
-                                        viewContext.delete(result)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch {
-                    print(error.localizedDescription)
-                }
-                do {
-                    try viewContext.save()
-                } catch {
-                    print(error.localizedDescription)
-                }
-                if !quick {
-                    user.ausrechnen = false
-                    user.updateMode = false
-                    user.simpleSuccess()
-                }
-
-                
-            }
-            
-        }
-    }
-    
-    @Environment(\.managedObjectContext) private var viewContext
-    func clearAll() {
+    private func clearAll() {
         user.aktuellerNotenName = ""
         user.aktuellerFaecherArray.removeAll()
-        user.aktuellerFaecherArray = fetchMap()
         hideKeyboard()
     }
-    func calcPunkte() -> Double? {
-        var punkteSchnitt = 0.0
+    
+    private func calcPunkte() -> Double? {
+        var sum = 0.0
         var count = 0.0
-        var alarm = true
-        
-        for i in user.aktuellerFaecherArray where !i.note.isEmpty {
-
-                if Double(i.note)! > 15 {
-                    return nil
-                } else {
-                    punkteSchnitt += Double(i.note)!
-                    count += 1
-                    if i.gewichtung == "2" {
-                        punkteSchnitt += Double(i.note)!
-                        count += 1
-                    }
-                    
-                }
-                alarm = false
-            
+        for f in user.aktuellerFaecherArray where !f.note.isEmpty {
+            guard let val = Double(f.note), val <= 15 else { return nil }
+            sum += val
+            count += (f.gewichtung == "2" ? 2 : 1)
         }
-        if alarm == true {
-            print("huhu")
-            return nil
-        }
-        punkteSchnitt /= count
-        return punkteSchnitt
-    }
-    func calcNote(punkte: Double) -> Double {
-        var notenSchnitt = 0.0
-        if punkte != 0 {
-            notenSchnitt = (17 - punkte)/3
-        } else {
-            notenSchnitt = 6.0
-        }
-        
-        return notenSchnitt
+        return count > 0 ? sum / count : nil
     }
     
-    func saveSemesterNoten(punkte: Double, note: Double) -> Bool {
+    private func calcNote(punkte: Double) -> Double {
+        return punkte != 0 ? (17 - punkte)/3 : 6.0
+    }
+    
+    private func deleteCurrentSemester() {
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Semesternote")
+        do {
+            let results = try viewContext.fetch(request)
+            for result in results {
+                if let res = result as? NSManagedObject,
+                   let thisID = res.value(forKey: "id") as? UUID,
+                   thisID.uuidString == user.aktuelleID {
+                    viewContext.delete(res)
+                }
+            }
+            try viewContext.save()
+            // HomeScreen update
+            user.semesterArray = fetchAllSemesterNoten(viewContext: viewContext) ?? []
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    
+    private func saveSemester(punkte: Double, note: Double) {
+        let isUpdate = user.updateMode
         
-        if user.updateMode {
-            let semesterRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Semesternote")
-            do {
-                let results = try viewContext.fetch(semesterRequest)
-                if !results.isEmpty {
-                    for i in results {
-                        if let result = i as? NSManagedObject {
-                            if result.value(forKey: "id") != nil {
-                                guard let thisID = result.value(forKey: "id") as? UUID else {
-                                    return false
-                                }
-                                if thisID.uuidString == user.aktuelleID {
-                                    viewContext.delete(result)
-                                    
-                                    let neueNote = Semesternote(context: viewContext)
-                                    neueNote.id = UUID()
-                                    
-                                    neueNote.name = user.aktuellerNotenName
-                                    neueNote.date = Date()
-                                    neueNote.semesterPunkte = punkte
-                                    neueNote.semesterNote = note
-                                    var neueFaecher = [Fach(context: viewContext)]
-                                    for j in user.aktuellerFaecherArray {
-                            //            if i.note != "" {
-                                            let neuesFach = Fach(context: viewContext)
-                                            neuesFach.id = j.id
-                                            neuesFach.name = j.name
-                                            neuesFach.gewichtung = Int64(j.gewichtung)!
-                                            neuesFach.note = j.note
-                                            neuesFach.alsSemesterFach = neueNote
-                                            neuesFach.position = j.position
-                                            neueFaecher.append(neuesFach)
-                                            
-                            //            }
-                                        
-                                    }
-                                    neueNote.faecher?.adding(neueFaecher)
-                                    do {
-                                        try viewContext.save()
-                                        return true
-                                    } catch {
-                                        print(error.localizedDescription)
-                                        return false
-                                    }
-                                
-                            }
-                            
-                        }
-                    }
-                }
-                }
-
-            do {
-                try viewContext.save()
-                return true
-            } catch {
-                print(error.localizedDescription)
-                return false
-            }
-            } catch {
-                print(error.localizedDescription)
-                return false
-            }
-            
+        if isUpdate {
+            // Bestehendes Semester löschen und neu erstellen
+            deleteCurrentSemester()
+        }
+        
+        let neueNote = Semesternote(context: viewContext)
+        neueNote.id = UUID()
+        user.aktuelleID = neueNote.id!.uuidString
+        
+        // Nur bei neuem Semester und leerem Namen automatisch nummerieren
+        if !isUpdate && user.aktuellerNotenName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let nextNumber = (user.semesterArray.count) + 1
+            neueNote.name = "\(nextNumber). Semester"
         } else {
-            let neueNote = Semesternote(context: viewContext)
-            neueNote.id = UUID()
-            user.aktuelleID = neueNote.id!.uuidString
             neueNote.name = user.aktuellerNotenName
-            neueNote.date = Date()
-            neueNote.semesterPunkte = punkte
-            neueNote.semesterNote = note
-            var neueFaecher = [Fach(context: viewContext)]
-            for i in user.aktuellerFaecherArray {
-    //            if i.note != "" {
-                    let neuesFach = Fach(context: viewContext)
-                    neuesFach.id = i.id
-                    neuesFach.name = i.name
-                    neuesFach.gewichtung = Int64(i.gewichtung)!
-                    neuesFach.note = i.note
-                    neuesFach.position = i.position
-                    neuesFach.alsSemesterFach = neueNote
-                    neueFaecher.append(neuesFach)
-                    
-    //            }
-                
-            }
-            neueNote.faecher?.adding(neueFaecher)
-            do {
-                try viewContext.save()
-                return true
-            } catch {
-                print(error.localizedDescription)
-                return false
-            }
         }
         
+        neueNote.date = Date()
+        neueNote.semesterPunkte = punkte
+        neueNote.semesterNote = note
+        
+        for f in user.aktuellerFaecherArray {
+            let neuesFach = Fach(context: viewContext)
+            neuesFach.id = f.id
+            neuesFach.name = f.name
+            neuesFach.note = f.note
+            neuesFach.gewichtung = Int64(f.gewichtung) ?? 1
+            neuesFach.position = f.position
+            neuesFach.alsSemesterFach = neueNote
+        }
+        
+        do {
+            try viewContext.save()
+            // Direkt nach dem Speichern UserStore aktualisieren
+            user.semesterArray = fetchAllSemesterNoten(viewContext: viewContext) ?? []
+            
+            
+            
+            // Widget Update
+            if let userDefaults = UserDefaults(suiteName: "group.notenRechner.widgetcache") {
+                let noteRounded = Double(round(100*note)/100)
+                userDefaults.set(noteRounded, forKey: "text")
+            }
+            WidgetCenter.shared.reloadAllTimelines()
+            
+        } catch {
+            print(error.localizedDescription)
+        }
     }
-    
-    
 
     
+    private func checkIfTrue(quick: Bool) {
+        guard let punkte = calcPunkte() else {
+            errorCalc = true
+            user.simpleError()
+            return
+        }
+        let note = calcNote(punkte: punkte)
+        if note > 0 {
+            saveSemester(punkte: punkte, note: note)
+            user.aktuelleNote = note
+            user.aktuellePunkte = punkte
+            user.aktuellerName = user.aktuellerNotenName
+            
+            if !quick {
+                user.updateMode = false
+                user.schnitt = true
+                user.siteOpened = 0
+                user.ausrechnen = false
+                user.showAd = true
+                hideKeyboard()
+                user.simpleSuccess()
+            }
+        } else {
+            deleteCurrentSemester()
+            if !quick {
+                user.ausrechnen = false
+                user.updateMode = false
+                user.simpleSuccess()
+            }
+        }
+    }
+    
+    private func handleAppGoesToBackground() {
+        guard let punkte = calcPunkte() else { return }
+        let note = calcNote(punkte: punkte)
+        saveSemester(punkte: punkte, note: note)
+    }
+
+    // MARK: - Body
     var body: some View {
         ZStack {
-            Color.modeColor.onTapGesture {
-                hideKeyboard()
-            }
-            VStack {
-                if tablet {
-                    TabletTopBar()
-                } else {
-                    
-                            VStack {
-                                ZStack {
-                                    HStack {
-                                        ZStack {
-                                            Rectangle().frame(width: 20, height: 20).foregroundColor(.modeColor)
-                                            ArrowLeft().onTapGesture {
-                                                user.ausrechnen = false
-                                            }
-                                        }.onTapGesture {
-                                            
-                                            if calcNote(punkte: calcPunkte()!) > 0 {
-                                                
-                                            } else {
-                                                let semesterRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Semesternote")
-                                                do {
-                                                    let results = try viewContext.fetch(semesterRequest)
-                                                    if !results.isEmpty {
-                                                        for i in results {
-                                                            if let result = i as? NSManagedObject {
-                                                                if result.value(forKey: "id") != nil {
-                                                                    guard let thisID = result.value(forKey: "id") as? UUID else {
-                                                                        return 
-                                                                    }
-                                                                    if thisID.uuidString == user.aktuelleID {
-                                                                        viewContext.delete(result)
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                } catch {
-                                                    print(error.localizedDescription)
-                                                }
-                                                do {
-                                                    try viewContext.save()
-                                                } catch {
-                                                    print(error.localizedDescription)
-                                                }
-                                                
-                                            }
-                                            
-                                            user.ausrechnen = false
-                                            user.updateMode = false
-                                            hideKeyboard()
-                                        }
-                                        Spacer()
-                                    }
-                                    Text(user.updateMode ? "\(user.aktuellerNotenName) bearbeiten" : "Neues Semester anlegen")
-                                }
-                                Rectangle().frame(width: screen.width, height: 0.5).foregroundColor(.gray)
-                    
-                            }
-                }
-                HStack {
-                    VStack {
-                        TextField("Name: z.B. 1. Semester", text: $user.aktuellerNotenName).font(.title3)
-                        HStack {
-                            Rectangle().frame(width: tablet ? 300 : screen.width * 0.7, height: 0.5).padding(.top, -6).foregroundColor(.gray)
-                            Spacer()
-                        }
-                    }
-                    Spacer()
-                }.padding(.top, 20).padding(.horizontal, 20)
+            Color.modeColor.ignoresSafeArea().onTapGesture { hideKeyboard() }
+            
+            VStack(spacing: 16) {
+            
                 
-                ZStack {
-                    ZStack {
-                        
-                        HStack {
-                            Spacer()
-                            Text("Punkte").font(.caption)
-                            Spacer()
-                        }
-                    }.frame(width: 80, height: 30)
-                    
-                        HStack {
-                            Spacer()
-                            
-                            Text("Gewichtung").padding(.trailing, tablet ? 100 : 20).font(.caption)
-                            
-                        }
-                        
-                }
+                // Semester Name
+                TextField("Name: z.B. 1. Semester", text: $user.aktuellerNotenName)
+                    .padding(10)
+                    .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray))
+                    .padding(.horizontal)
+                
+                // Fächerliste
                 ScrollView {
-                    ForEach(0..<user.aktuellerFaecherArray.count) { index in
-                        ZStack {
-                            Color.modeColor.onTapGesture {
-                                hideKeyboard()
-                            }
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.5).foregroundColor(.modeColor)
-                                HStack {
-                                    Spacer()
-                                    TextField("0", text: $user.aktuellerFaecherArray[index].note)
-                                        .multilineTextAlignment(.center).keyboardType(.numberPad)
-                                    Spacer()
-                                }
-                            }.frame(width: 40, height: 30)
-                            HStack {
-                                    VStack {
-                                        TextField("\(index + 1). Fach", text: $user.aktuellerFaecherArray[index].name).font(.headline)
-                                        HStack {
-                                            Rectangle().frame(height: 0.5).padding(.top, -6).foregroundColor(.gray)
-                                            Spacer()
+                    VStack(spacing: 10) {
+                        // Beispiel innerhalb deiner ForEach für Fächer
+                        ForEach(user.aktuellerFaecherArray.indices, id: \.self) { index in
+                            HStack(spacing: 10) {
+                                // Fachname
+                                TextField("Fachname", text: $user.aktuellerFaecherArray[index].name)
+                                    .padding(8)
+                                    .background(RoundedRectangle(cornerRadius: 6).stroke(Color.gray))
+                                    .frame(maxWidth: .infinity)
+                                
+                                // Punkte
+                                TextField("0", text: Binding(
+                                    get: { user.aktuellerFaecherArray[index].note },
+                                    set: { newValue in
+                                        // Nur Zahlen zwischen 0 und 15 erlauben
+                                        let filtered = newValue.filter { "0123456789.".contains($0) }
+                                        if let doubleValue = Double(filtered), doubleValue >= 0, doubleValue <= 15 {
+                                            user.aktuellerFaecherArray[index].note = filtered
+                                        } else if filtered.isEmpty {
+                                            user.aktuellerFaecherArray[index].note = ""
                                         }
-                                    }.frame(width: screen.width * 0.35).padding(.leading, 10)
-                                    
-                                    Spacer()
-                            }.offset(y: 5)
-                            
-                                HStack {
-                                    Spacer()
-                                    ZStack {
-                                        Color.modeColor
-                                        RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.5).foregroundColor(.modeColor)
-                                        HStack {
-                                            ZStack {
-                                                RoundedRectangle(cornerRadius: 5).foregroundColor(.mainColor).frame(width: 40)
-                                                    .opacity(user.aktuellerFaecherArray[index].gewichtung == "1" ? 1 : 0)
-                                                if user.aktuellerFaecherArray[index].gewichtung == "1" {
-                                                    Text("1x").foregroundColor(.modeColor)
-                                                } else {
-                                                    Text("1x").foregroundColor(.gray)
-                                                }
-                                                
-                                            }
-                                            Spacer()
-                                        }
-                                        HStack {
-                                            Spacer()
-                                            ZStack {
-                                                RoundedRectangle(cornerRadius: 5).foregroundColor(.mainColor).frame(width: 40)
-                                                    .opacity(user.aktuellerFaecherArray[index].gewichtung == "2" ? 1 : 0)
-                                                if user.aktuellerFaecherArray[index].gewichtung == "2" {
-                                                    Text("2x").foregroundColor(.modeColor)
-                                                } else {
-                                                    Text("2x").foregroundColor(.gray)
-                                                }
-                                            }
-                                            
-                                        }
-                                        
-                                    }.frame(width: 80, height: 30).padding(.trailing, tablet ? 100 : 20).onTapGesture {
-                                        if user.aktuellerFaecherArray[index].gewichtung == "1" {
-                                            user.aktuellerFaecherArray[index].gewichtung = "2"
-                                            return
-                                        }
-                                        if user.aktuellerFaecherArray[index].gewichtung == "2" {
-                                            user.aktuellerFaecherArray[index].gewichtung = "1"
-                                        }
-                                        
+                                        // sonst nicht übernehmen (ungültige Eingabe ignorieren)
                                     }
+                                ))
+                                .keyboardType(.decimalPad)
+                                .multilineTextAlignment(.center)
+                                .padding(6)
+                                .background(RoundedRectangle(cornerRadius: 6).stroke(Color.gray))
+                                .frame(width: 50)
+                                
+                                // Gewichtung Picker
+                                Picker("", selection: $user.aktuellerFaecherArray[index].gewichtung) {
+                                    Text("1x").tag("1")
+                                    Text("2x").tag("2")
                                 }
-                            
-                        }.padding(.top, tablet ? 20 : 5)
+                                .pickerStyle(.segmented)
+                                .frame(width: 70)
+                            }
+                            .padding(.horizontal)
+                            .padding(.vertical, 4)
+                            .background(RoundedRectangle(cornerRadius: 8).fill(Color(.systemBackground).opacity(0.1)))
+                        }
+
+                        
+                        // + Fach hinzufügen
+                        Button(action: {
+                            user.aktuellerFaecherArray.append(
+                                FachItem(id: UUID(), name: "", note: "", gewichtung: "1", position: Int64(user.aktuellerFaecherArray.count + 1))
+                            )
+                        }) {
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
+                                Text("Fach hinzufügen")
+                            }
+                            .foregroundColor(.accentColor)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(RoundedRectangle(cornerRadius: 10).stroke(Color.accentColor))
+                        }
+                        .padding(.horizontal)
                     }
+                    .padding(.top, 4)
                 }
                 
-                HStack {
-                    Spacer()
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10).stroke(Color.mainColor, lineWidth: 0.5).foregroundColor(.modeColor)
+                // Buttons
+                HStack(spacing: 16) {
+                    Button(action: warnUser) {
                         HStack {
-                            Image(systemName: "arrow.counterclockwise").resizable().aspectRatio(contentMode: .fit)
-                                .frame(width: tablet ? 22 : 17).padding(.leading, 3).foregroundColor(.mainColor)
-                            Spacer()
-                            Text("Zurücksetzen").foregroundColor(.mainColor).padding(.trailing).font(tablet ? .title : .headline)
-                            
-                        }.padding(.horizontal, tablet ? 10 : 3)
-                    }.frame(width: tablet ? 250 : 160, height: tablet ? 50 : 40).onTapGesture(perform: warnUser)
-                        .alert(isPresented: $showDeleteAlert) {
-                        Alert(title: Text("Zurücksetzen"), message: Text("Möchtest du diese Seite wirklich zurücksetzen?"),
+                            Image(systemName: "arrow.counterclockwise")
+                            Text("Zurücksetzen")
+                        }
+                        .foregroundColor(.mainColor)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(RoundedRectangle(cornerRadius: 10).stroke(Color.mainColor))
+                    }
+                    .alert(isPresented: $showDeleteAlert) {
+                        Alert(title: Text("Zurücksetzen"),
+                              message: Text("Möchtest du diese Seite wirklich zurücksetzen?"),
                               primaryButton: .destructive(Text("Ja"), action: clearAll),
-                              secondaryButton: .cancel(Text("Nein")))
-                }
-                    Spacer()
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10).foregroundColor(.mainColor)
-                        Text(user.updateMode ? "Aktualisieren" : "Ausrechnen").foregroundColor(.modeColor).font(tablet ? .title : .headline)
-                    }.frame(width: tablet ? 250 : 120, height: tablet ? 50 : 40).onTapGesture(perform: {checkIfTrue(quick: false)}).alert(isPresented: $errorCalc) {
+                              secondaryButton: .cancel())
+                    }
+                    
+                    Button(action: {dismiss();  checkIfTrue(quick: false) }) {
+                        Text(user.updateMode ? "Aktualisieren" : "Ausrechnen")
+                            .foregroundColor(.modeColor)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(RoundedRectangle(cornerRadius: 10).fill(Color.mainColor))
+                    }
+                    .alert(isPresented: $errorCalc) {
                         Alert(title: Text("Falsche Punktzahl"),
                               message: Text("Es sieht so aus als hättest du irgendwo eine falsche Punktzahl oder gar keine eingegeben"),
                               dismissButton: .cancel())
                     }
-                    Spacer()
-                }.padding([.top, .bottom])
+                }
+                .padding(.horizontal)
                 
                 Spacer()
-                if !(user.userHasGoldPremium) {
-                            BannerADView(bannerID: "ca-app-pub-3263827122305139/3463838331")
-                        .frame(width: screen.width, height: 60).edgesIgnoringSafeArea(.bottom)
-                        }
-            }
-            
-        }.onAppear {
-            
-        }.onChange(of: scenePhase) { newPhase in
-            if newPhase == .inactive {
-                print("Inaktiv")
-                // Rufe die Speicherfunktion auf, wenn die App in den Hintergrund geht
-                handleAppGoesToBackground()
-            }
+                
+                // Banner Ad
+                if !user.userHasGoldPremium {
+                    BannerADView(bannerID: "ca-app-pub-3263827122305139/3463838331")
+                        .frame(height: 60)
+                        .padding(.top, 10)
+                }
+            }.padding(.top, 20)
         }
-        
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .inactive { handleAppGoesToBackground() }
+        }
     }
-    private func handleAppGoesToBackground() {
-            guard let punkte = calcPunkte() else { return } // Berechne die Punkte
-            let note = calcNote(punkte: punkte) // Berechne die Note
-            _ = saveSemesterNoten(punkte: punkte, note: note) // Speichere die Note
-            print("Daten wurden im Hintergrund gespeichert.")
-        }
 }
+
+
+
 
 struct SemesterNoteAusrechnen_Previews: PreviewProvider {
     static var previews: some View {
@@ -486,12 +314,12 @@ struct AbiItem: Identifiable {
 }
 
 func fetchMap() -> [FachItem] {
-    print("ICH FETCHE!")
-var numbers: [FachItem] = []
-    for i in 1..<15 {
-        numbers.append(FachItem.init(id: UUID(), name: "", note: "", gewichtung: "1", position: Int64(i)))
+    var numbers: [FachItem] = []
+    // mindestens 1 Fach
+    for i in 1..<2 {
+        numbers.append(FachItem(id: UUID(), name: "", note: "", gewichtung: "1", position: Int64(i)))
     }
-return numbers
+    return numbers
 }
 
 func fetchMapAbi() -> [AbiItem] {

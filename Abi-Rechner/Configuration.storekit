@@ -1,4 +1,14 @@
 {
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
   "identifier" : "6C9F4216",
   "nonRenewingSubscriptions" : [
 
@@ -228,7 +238,10 @@
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Abi Noten Rechner BASIC Abo",
           "subscriptionGroupID" : "BEB34ED4",
-          "type" : "RecurringSubscription"
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
         }
       ]
     },
@@ -247,9 +260,9 @@
             {
               "displayPrice" : "4.99",
               "eligibility" : [
-                "new",
                 "existing",
-                "expired"
+                "expired",
+                "new"
               ],
               "internalID" : "E5913266",
               "isStackable" : true,
@@ -280,13 +293,16 @@
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Abi Noten Rechner GOLD Abo",
           "subscriptionGroupID" : "AB06D968",
-          "type" : "RecurringSubscription"
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
         }
       ]
     }
   ],
   "version" : {
-    "major" : 3,
+    "major" : 4,
     "minor" : 0
   }
 }

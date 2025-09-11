@@ -10,42 +10,18 @@ import Combine
 import StoreKit
 
 class UserStore: ObservableObject {
-    @Published var ausrechnen: Bool = defaults.bool(forKey: "ausrechnen") {
-        didSet {
-            defaults.set(ausrechnen, forKey: "ausrechnen")
-        }
-    }
-    @Published var schnitt: Bool = defaults.bool(forKey: "schnitt") {
-        didSet {
-            defaults.set(schnitt, forKey: "schnitt")
-        }
-    }
-    @Published var verlauf: Bool = defaults.bool(forKey: "verlauf") {
-        didSet {
-            defaults.set(verlauf, forKey: "verlauf")
-        }
-    }
+    @Published var ausrechnen: Bool = false
+    @Published var schnitt: Bool = false
+    @Published var verlauf: Bool = false
     
-    @Published var abiClicked: Bool = defaults.bool(forKey: "abiClicked") {
-        didSet {
-            defaults.set(abiClicked, forKey: "abiClicked")
-        }
-    }
-    @Published var spendenClicked: Bool = defaults.bool(forKey: "spendenClicked") {
-        didSet {
-            defaults.set(spendenClicked, forKey: "spendenClicked")
-        }
-    }
+    @Published var abiClicked: Bool = false
+    @Published var spendenClicked: Bool = false
     @Published var letztesSemester = false
     @Published var itemClicked = false
     @Published var updateMode = true
     @Published var reviewed = false
     @Published var aktuelleID = ""
-    @Published var siteOpened = defaults.integer(forKey: "siteOpened") {
-        didSet {
-            defaults.set(siteOpened, forKey: "siteOpened")
-        }
-    }
+    @Published var siteOpened = 0
     @Published var updateVerlauf = false
     @Published var semesterNoten = [SemesternotenItem]()
     @Published var showAd = false
@@ -53,6 +29,7 @@ class UserStore: ObservableObject {
     @Published var components = DateComponents()
     @Published var differenceBetweenDates = updateDifferenceBetweenDates()
     @Published var supportClicked = false
+    @Published var noteTeilenClicked: Bool = false
     @Published var sendEmail = false
     @Published var userHasBasicPremium = defaults.bool(forKey: "userHasBasicPremium") {
         didSet {
@@ -148,6 +125,8 @@ class UserStore: ObservableObject {
     }
     //fetchMap()
     @Published var aktuellerFaecherArray:[FachItem] = fetchMap()
+    @Published var semesterArray: [SemesternotenItem] = []
+
     
     @Published var aktuellerAbiNotenArray = fetchMapAbi()
     @Published var aktuellerNotenName = defaults.string(forKey: "aktuellerNotenName") ?? "" {

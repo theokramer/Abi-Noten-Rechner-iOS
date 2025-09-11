@@ -18,30 +18,11 @@ struct StartView: View {
     
     @Binding var activeScene: Int
     
-    func containedView() -> AnyView {
-        switch user.siteOpened {
-        case 0:
-            return AnyView(HomeView())
-        case 1:
-            return AnyView(SemesterNoteAusrechnen())
-        case 2:
-            return AnyView(SemesterNotenVerlauf())
-        case 3:
-            return AnyView(SpendenView())
-        case 4:
-            return AnyView(AbiClicked())
-        case 5:
-            return AnyView(SupportView())
-        default:
-            return AnyView(HomeView())
-        }
-    }
-    
     @State var interstitial: GADInterstitialAd = GADInterstitialAd()
     var body: some View {
         ZStack {
             if tablet {
-            containedView()
+            HomeView()
             } else {
                 
                 ZStack {
@@ -97,9 +78,6 @@ struct StartView: View {
                             }
                         }
                         
-                        if user.verlauf {
-                            SemesterNotenVerlauf()
-                        }
                     
                         if user.showAd {
                             

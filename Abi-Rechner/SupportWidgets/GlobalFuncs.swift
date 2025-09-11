@@ -8,6 +8,36 @@
 import SwiftUI
 import CoreData
 
+extension String {
+    func toDate() -> Date? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yyyy  hh:mm"
+        return formatter.date(from: self)
+    }
+}
+
+extension Date {
+    func toStringDate(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .none
+        formatter.dateStyle = .medium
+        formatter.timeZone = TimeZone.current
+        let dateString = formatter.string(from: date)
+        return dateString
+    }
+}
+
+
+
+struct SemesternotenItem: Identifiable {
+    var id: UUID
+    var name: String
+    var semesterNote: Double
+    var semesterPunkte: Double
+    var date: Date
+}
+
+
 func countdown(date2: Date) -> DateComponents {
     var dateComponents = DateComponents()
     dateComponents.calendar = Calendar.current
