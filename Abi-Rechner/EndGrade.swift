@@ -123,9 +123,8 @@ struct AbiClicked: View {
                         }
                         .padding(.vertical, 8)
                     }
-                }
+        }
                 .listStyle(.insetGrouped)
-                
                 .onAppear {
                     if user.selectedSemesterIDs.isEmpty, !user.semesterArray.isEmpty {
                         // Erststart → default auf 4 Semester setzen
@@ -141,6 +140,8 @@ struct AbiClicked: View {
 
 
             }
+    
+    
 
 
     struct ShareSheet: UIViewControllerRepresentable {

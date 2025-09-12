@@ -26,32 +26,47 @@ struct PremiumView: View {
                         .bold()
                         .foregroundColor(colorScheme == .dark ? .white : .black)
                         .padding(.top, 40)
-
+                    
                     if user.userHasGoldPremium {
                         // GOLD Premium-Bereich
                         GoldPremiumView(selectedColor: $selectedColor)
                             .environmentObject(user)
-                    } else if user.userHasBasicPremium {
-                        // Basic gekauft → nur Gold Abo anzeigen
-                        BasicPremiumView()
-                            .environmentObject(user)
                     } else {
-                        // Noch kein Abo → Basic + Gold Optionen
+                        // Noch kein Gold → Zeige nur GOLD Card + Hinweis für Basic
                         VStack(spacing: 25) {
-                            // BASIC Card
-                            PremiumCardView(
-                                title: "BASIC",
-                                price: "1,99€ / Jahr",
-                                features: [
-                                    ("infinity", "Unendlich viele Semester anlegen"),
-                                    ("list.bullet.rectangle", "Semesterübersicht freischalten")
-                                ],
-                                isSelected: selectedTier == 0,
-                                colorScheme: colorScheme
-                            ) {
-                                selectedTier = 0
+                            
+                            if user.userHasBasicPremium {
+                                // Hinweis, dass Basic bereits gekauft wurde
+                                HStack {
+                                    Image(systemName: "checkmark.seal.fill")
+                                        .foregroundColor(.saleColor)
+                                        .frame(width: 30, height: 30)
+                                    Text("Du hast das Basic-Abo bereits abgeschlossen")
+                                        .foregroundColor(.gray)
+                                        .font(.headline)
+                                    Spacer()
+                                }
+                                .padding()
+                                .background(Color.gray.opacity(0.15))
+                                .cornerRadius(15)
+                                .padding(.horizontal)
+                            } else {
+                                // BASIC Card nur anzeigen, wenn es noch nicht gekauft wurde
+                                PremiumCardView(
+                                    title: "BASIC",
+                                    price: "1,99€ / Jahr",
+                                    features: [
+                                        ("infinity", "Unendlich viele Semester anlegen"),
+                                        ("list.bullet.rectangle", "Semesterübersicht freischalten")
+                                    ],
+                                    isSelected: selectedTier == 0,
+                                    colorScheme: colorScheme
+                                ) {
+                                    selectedTier = 0
+                                }
+                                .padding(.horizontal)
                             }
-
+                            
                             // GOLD Card + Option Picker
                             VStack(spacing: 10) {
                                 PremiumCardView(
@@ -80,25 +95,28 @@ struct PremiumView: View {
                                     .padding(.horizontal)
                                 }
                             }
-                        }
-                        .padding(.horizontal)
-
-                        // Kauf Button
-                        if let tier = selectedTier {
-                            Button(action: {
-                                purchase(tier: tier, goldOption: selectedGoldOption)
-                            }) {
-                                Text(tier == 0 ? "BASIC kaufen" : selectedGoldOption == 0 ? "GOLD Jährlich kaufen" : "GOLD Lifetime kaufen")
-                                    .bold()
-                                    .frame(maxWidth: .infinity, minHeight: 60)
-                                    .background(Color.saleColor)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(20)
-                                    .shadow(radius: 5)
-                            }
                             .padding(.horizontal)
+                            
+                            // Kauf Button wie gehabt
+                            if let tier = selectedTier {
+                                Button(action: {
+                                    purchase(tier: tier, goldOption: selectedGoldOption)
+                                }) {
+                                    Text(tier == 0 ? "BASIC kaufen" : selectedGoldOption == 0 ? "GOLD Jährlich kaufen" : "GOLD Lifetime kaufen")
+                                        .bold()
+                                        .frame(maxWidth: .infinity, minHeight: 60)
+                                        .background(Color.saleColor)
+                                        .foregroundColor(.white)
+                                        .cornerRadius(20)
+                                        .shadow(radius: 5)
+                                }
+                                .padding(.horizontal)
+                            }
                         }
                     }
+
+                    // Restore & Policy unverändert
+
 
                     // Restore & Policy
                     VStack(spacing: 10) {
@@ -286,206 +304,6 @@ struct GoldPremiumView: View {
             }
 
             Spacer()
-        }
-    }
-}
-
-struct BasicPremiumView: View {
-    @EnvironmentObject var user: UserStore
-    var body: some View {
-        VStack {
-            Text("Schalte das GOLD-Abo frei").font(.title2).bold().padding(.top, 5)
-
-            HStack {
-                ZStack {
-                    Ellipse().foregroundColor(.saleColor)
-                    Image(systemName: "checkmark.seal").resizable().aspectRatio(contentMode: .fit).frame(width: 20).foregroundColor(.white)
-                }.frame(width: 40, height: 40)
-                Text("Du hast das Basic-Abo abgeschlossen").foregroundColor(.gray)
-            }
-
-            Rectangle().frame(width: screen.width, height: 0.5).foregroundColor(.gray)
-
-            VStack {
-                HStack {
-                    ZStack {
-                        Ellipse().foregroundColor(.saleColor)
-                        Image(systemName: "lock.open").resizable().aspectRatio(contentMode: .fit)
-                            .frame(width: 20).foregroundColor(.white)
-                    }.frame(width: 40, height: 40)
-                    Text("Notendurchschnitt aller Semester").padding(.leading, 10)
-                    Spacer()
-
-                }.padding(.horizontal, 15).padding(.top, 5)
-
-                HStack {
-                    ZStack {
-                        Ellipse().foregroundColor(.saleColor)
-                        Image(systemName: "tag.slash").resizable().aspectRatio(contentMode: .fit)
-                            .frame(width: 20).foregroundColor(.white)
-                    }.frame(width: 40, height: 40)
-                    Text("Keine Werbung").padding(.leading, 10)
-                    Spacer()
-
-                }.padding(.horizontal, 15).padding(.top, 5)
-
-                HStack {
-                    ZStack {
-                        Ellipse().foregroundColor(.saleColor)
-                        Image(systemName: "paintpalette").resizable().aspectRatio(contentMode: .fit)
-                            .frame(width: 20).foregroundColor(.white)
-                    }.frame(width: 40, height: 40)
-                    Text("Individuelle Farbe und App Icon").padding(.leading, 10)
-                    Spacer()
-
-                }.padding(.horizontal, 15).padding(.top, 5)
-
-                HStack {
-                    ZStack {
-                        Ellipse().foregroundColor(.saleColor)
-                        Image(systemName: "checkmark.seal").resizable().aspectRatio(contentMode: .fit)
-                            .frame(width: 20).foregroundColor(.white)
-                    }.frame(width: 40, height: 40)
-                    Text("Endnote berechnen").padding(.leading, 10)
-                    Spacer()
-
-                }.padding(.horizontal, 15).padding(.top, 5)
-            }
-            Spacer()
-            VStack {
-
-                ZStack {
-                    RoundedRectangle(cornerRadius: 40).foregroundColor(.saleColor).offset(y: 40)
-                    VStack {
-                        ZStack {
-
-                            BuyButtonRectangle()
-                            HStack {
-                                if checkIfSaleIsActive() {
-                                    Text("1,99€ / Jahr").foregroundColor(.white)
-                                } else {
-                                    Text("1,99€ / Jahr").foregroundColor(.white)
-                                }
-
-                            }
-
-                        }.onTapGesture {
-
-                            Products.store.requestProducts { _, products  in
-                                guard let products = products else {
-                                    return
-                                }
-                                var productIndex = 0
-
-                                if products[0].productIdentifier == Products.goldSub {
-                                    productIndex = 0
-                                }
-
-                                if products[1].productIdentifier == Products.goldSub {
-                                    productIndex = 1
-                                }
-                                if products[2].productIdentifier == Products.goldSub {
-                                    productIndex = 2
-                                }
-
-                                Products.store.buyProduct(products[productIndex]) {_, productId in
-
-                                    guard let productId = productId else {
-                                        return
-                                    }
-
-                                    if Products.store.isProductPurchased(productId) {
-                                        if productId == Products.permanent || productId == Products.goldSub {
-                                            user.premium = true
-                                        }
-                                        if productId == Products.basicSub {
-                                            user.basicPremium = true
-                                        }
-                                        user.userHasBasicPremium = user.basicPremium ||
-                                        Products.store.isProductPurchased(Products.basicSub) ? true : false
-                                        user.userHasGoldPremium = user.premium ||
-                                        Products.store.isProductPurchased(Products.permanent) ||
-                                        Products.store.isProductPurchased(Products.goldSub) ? true : false
-
-                                    }
-                                }
-                            }
-                        }
-
-                        Text("oder").font(.callout).foregroundColor(.white).multilineTextAlignment(.center).padding(.horizontal, 10)
-
-                        ZStack {
-                            BuyButtonRectangle()
-                            HStack {
-                                if checkIfSaleIsActive() {
-                                    Text("4,99€ / einmalig").foregroundColor(.white).strikethrough()
-                                } else {
-                                    Text("4,99€ / einmalig").foregroundColor(.white)
-                                }
-
-                            }
-                        }.onTapGesture {
-                            Products.store.requestProducts { _, products  in
-                                guard let products = products else {
-                                    return
-                                }
-                                var productIndex = 0
-                                if products[0].productIdentifier == Products.permanent {
-                                    productIndex = 0
-                                }
-
-                                if products[1].productIdentifier == Products.permanent {
-                                    productIndex = 1
-                                }
-                                if products[2].productIdentifier == Products.permanent {
-                                    productIndex = 2
-                                }
-
-                                Products.store.buyProduct(products[productIndex]) {_, productId in
-
-                                    guard let productId = productId else {
-                                        return
-                                    }
-
-                                    if Products.store.isProductPurchased(productId) {
-                                        if productId == Products.permanent || productId == Products.goldSub {
-                                            user.premium = true
-                                        }
-                                        if productId == Products.basicSub {
-                                            user.basicPremium = true
-                                        }
-                                        user.userHasBasicPremium = user.basicPremium ||
-                                        Products.store.isProductPurchased(Products.basicSub) ? true : false
-                                        user.userHasGoldPremium = user.premium ||
-                                        Products.store.isProductPurchased(Products.permanent) ||
-                                        Products.store.isProductPurchased(Products.goldSub) ? true : false
-                                    }
-                                }
-                            }
-                        }
-
-                        Link(destination: URL(string: "https://415414.8b.io/privacyAndTerms.html")!, label: {
-                            Text("Privacy Policy & Terms Of Use").font(.callout).underline().padding(.top, 5).foregroundColor(.white)
-                        })
-                        Text("Kauf wiederherstellen").font(.callout).underline().padding(.top, 5)
-                            .foregroundColor(.white).padding(.bottom, 20).onTapGesture {
-                                Products.store.restorePurchases()
-                                if user.premium || Products.store.isProductPurchased(Products.permanent) ||
-                                    Products.store.isProductPurchased(Products.goldSub) || user.basicPremium ||
-                                    Products.store.isProductPurchased(Products.basicSub) {
-                                    user.spendenClicked = false
-                                    user.simpleSuccess()
-                                } else {
-                                    user.simpleError()
-                                }
-                            }
-                        Spacer()
-                    }
-
-                }.frame(width: screen.width, height: screen.height * 0.35).padding(.top, 30)
-
-                Spacer()
-            }
         }
     }
 }

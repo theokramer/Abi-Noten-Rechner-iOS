@@ -26,9 +26,9 @@ struct HomeView: View {
                     if let currentSemester = currentSemester,
                        let index = user.semesterArray.firstIndex(where: { $0.id == currentSemester.id }) {
                         let bindingSemester = $user.semesterArray[index]
-                        CurrentSemesterCardContent(currentSemester: bindingSemester, viewModel: viewModel, user: user)
+                        CurrentSemesterCardContent(currentSemester: bindingSemester, viewModel: viewModel, user: _user)
                     } else {
-                        EmptySemesterCard(user: user)
+                        EmptySemesterCard(user: _user)
                     }
                 }
                 
@@ -66,13 +66,13 @@ struct HomeView: View {
                                 .tint(.blue)
                             }
                         }
-                        NewSemesterButton(user: user)
+                        NewSemesterButton(user: _user)
                     }
                 }
                 
                 // MARK: - Endnote Section
                 Section {
-                    EndnoteSection(user: user)
+                    EndnoteSection(user: _user)
                 }
                 
                 
@@ -145,7 +145,7 @@ struct HomeView: View {
 struct CurrentSemesterCardContent: View {
     @Binding var currentSemester: SemesternotenItem
     @ObservedObject var viewModel: HomeViewModel
-    @ObservedObject var user: UserStore
+    @EnvironmentObject var user: UserStore
     
     var body: some View {
         VStack(spacing: 12) {
@@ -170,108 +170,19 @@ struct CurrentSemesterCardContent: View {
 
 
 
-
-
-
-struct AllSemestersSection: View {
-    @ObservedObject var user: UserStore
-    @ObservedObject var viewModel: HomeViewModel
-    var viewContext: NSManagedObjectContext
-
-    @State private var selectedSemester: SemesternotenItem? = nil
-    @State private var semesterToDelete: SemesternotenItem? = nil
-    @State private var showDeleteAlert = false
-
-    private var sortedSemesters: [SemesternotenItem] {
-        user.semesterArray.sorted { $0.date < $1.date }
-    }
-
-    var body: some View {
-        if !user.semesterArray.isEmpty {
-            VStack(alignment: .leading, spacing: 16) {
-                SemesterListHeader(user: user, avg: overallAverage)
-
-                List {
-                    ForEach(sortedSemesters) { item in
-                        NavigationLink(
-                            destination: SemesterNoteAusrechnen(semesterToEdit: item)
-                                .environmentObject(user),
-                            tag: item,
-                            selection: $selectedSemester
-                        ) {
-                            SemesterRowView(
-                                index: sortedSemesters.firstIndex(of: item) ?? 0,
-                                item: item
-                            ) {
-                                selectedSemester = item
-                            }
-                        }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button(role: .destructive) {
-                                semesterToDelete = item
-                                deleteSemester(semesterToDelete!)
-
-                            } label: {
-                                Label("Löschen", systemImage: "trash")
-                            }
-                        }
-                    }
-                }
-                .listStyle(.plain)
-                .frame(height: 80 + CGFloat(sortedSemesters.count) * 35) // Höhe anpassen falls nötig
-               
-                NewSemesterButton(user: user)
-            }
-            .cardStyle()
-            .padding(.horizontal)
-        }
-    }
-
-    private var overallAverage: Double? {
-        guard !viewModel.semesterNoten.isEmpty else { return nil }
-        let sum = viewModel.semesterNoten.reduce(0.0) { $0 + $1.semesterNote }
-        return sum / Double(viewModel.semesterNoten.count)
-    }
-
-    private func deleteSemester(_ sem: SemesternotenItem) {
-        if let object = fetchSemesterObject(by: sem.id, context: viewContext) {
-            viewContext.delete(object)
-            do {
-                try viewContext.save()
-                print("Semester gelöscht und gespeichert")
-            } catch {
-                print("Fehler beim Speichern: \(error.localizedDescription)")
-            }
-        }
-        // nur UserStore aktualisieren
-        user.semesterArray.removeAll { $0.id == sem.id }
-    }
-
-
-
-    private func fetchSemesterObject(by id: UUID, context: NSManagedObjectContext) -> NSManagedObject? {
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Semesternote")
-        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-        request.fetchLimit = 1
-        return (try? context.fetch(request))?.first as? NSManagedObject
-    }
-}
-
-
-
 struct EndnoteSection: View {
-    @ObservedObject var user: UserStore
+    @EnvironmentObject var user: UserStore
 
     var body: some View {
         VStack(spacing: 16) {
             if user.userHasGoldPremium {
                 NavigationLink(destination: AbiClicked().environmentObject(user)) {
-                    FeatureCard(title: "Endnote berechnen", icon: "graduationcap.fill", active: true)
+                    FeatureCard(title: "Endnote berechnen", icon: "graduationcap.fill", active: true).environmentObject(user)
                 }
                 .buttonStyle(PlainButtonStyle())
             } else {
                 Button(action: { user.spendenClicked = true }) {
-                    FeatureCard(title: "Endnote berechnen", icon: "graduationcap.fill", active: false)
+                    FeatureCard(title: "Endnote berechnen", icon: "graduationcap.fill", active: false).environmentObject(user)
                 }
             }
         }
@@ -280,27 +191,8 @@ struct EndnoteSection: View {
 }
 
 
-struct SemesterListHeader: View {
-    @ObservedObject var user: UserStore
-    let avg: Double?
-
-    var body: some View {
-        HStack {
-            Text("Deine Semester")
-                .font(.headline)
-            Spacer()
-            if user.userHasGoldPremium, let avg = avg {
-                Text("Ø \(String(format: "%.2f", avg))")
-                    .font(.subheadline).bold()
-                    .foregroundColor(.secondary)
-            }
-        }
-    }
-}
-
-
 struct NewSemesterButton: View {
-    @ObservedObject var user: UserStore
+    @EnvironmentObject var user: UserStore
     @State private var navigateToSemester = false
 
     private func resetForNewSemester() {
@@ -314,13 +206,16 @@ struct NewSemesterButton: View {
         NavigationLink(destination: SemesterNoteAusrechnen().environmentObject(user),
                        isActive: $navigateToSemester) {
             Button {
-                resetForNewSemester()
-                navigateToSemester = true
+                if user.userHasBasicPremium { resetForNewSemester()
+                    navigateToSemester = true} else {
+                        user.spendenClicked = true
+                    }
+                
             } label: {
                 FeatureCard(title: "Neues Semester anlegen",
                             icon: "plus.circle.fill",
-                            active: user.userHasGoldPremium,
-                            showChevron: false)
+                            active: user.userHasBasicPremium,
+                            showChevron: false).environmentObject(user)
             }
             .buttonStyle(PlainButtonStyle())
         }
@@ -370,34 +265,10 @@ struct StatsRow: View {
 
 
 
-struct EditSemesterButton: View {
-    let item: SemesternotenItem
-    @ObservedObject var user: UserStore
-    var viewContext: NSManagedObjectContext
-
-    var body: some View {
-        Button {
-            openSemester(item: item)
-        } label: {
-            Text("Semester bearbeiten")
-                .font(.subheadline.weight(.semibold))
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-        }
-        .buttonStyle(.automatic)
-    }
-
-    private func openSemester(item: SemesternotenItem) {
-        user.aktuellerFaecherArray = fetchAllFaecherFromSemesternote(id: item.id, viewContext: viewContext)
-        user.aktuellerNotenName = item.name
-        user.aktuelleID = item.id.uuidString
-        user.updateMode = true
-    }
-}
-
 
 struct EmptySemesterCard: View {
-    @ObservedObject var user: UserStore
+    @EnvironmentObject var user: UserStore
+    @State private var navigateToSemester = false
 
     private func resetForNewSemester() {
         user.updateMode = false
@@ -407,19 +278,20 @@ struct EmptySemesterCard: View {
     }
 
     var body: some View {
-        NavigationLink(destination: SemesterNoteAusrechnen().environmentObject(user)
-                       ) {
-            Button {
-                resetForNewSemester()
-            } label: {
-                FeatureCard(title: "Neues Semester anlegen",
-                            icon: "plus.circle.fill",
-                            active: true)
-            }
-            .buttonStyle(PlainButtonStyle())
+        NavigationLink(destination: SemesterNoteAusrechnen().environmentObject(user),
+                       isActive: $navigateToSemester) {
+            FeatureCard(title: "Neues Semester anlegen",
+                        icon: "plus.circle.fill",
+                        active: true).environmentObject(user)
+                .onTapGesture {
+                    resetForNewSemester()
+                    navigateToSemester = true
+                }
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }
+
 
 
 

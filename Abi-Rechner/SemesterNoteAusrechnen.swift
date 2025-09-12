@@ -388,7 +388,7 @@ struct SemesterNoteAusrechnen: View {
                 Button(action: warnUser) {
                     Label("Reset", systemImage: "arrow.counterclockwise")
                         .frame(maxWidth: .infinity)
-                        .padding()
+                        .padding(12)
                         .background(RoundedRectangle(cornerRadius: 12).stroke(Color.mainColor))
                         .foregroundColor(.mainColor)
                 }
@@ -404,7 +404,7 @@ struct SemesterNoteAusrechnen: View {
                 Button(action: { dismiss(); checkIfTrue(false) }) {
                     Text(updateMode ? "Aktualisieren" : "Ausrechnen")
                         .frame(maxWidth: .infinity)
-                        .padding()
+                        .padding(12)
                         .background(RoundedRectangle(cornerRadius: 12).fill(Color.mainColor))
                         .foregroundColor(.modeColor)
                 }
