@@ -46,12 +46,31 @@ struct SemesterNoteAusrechnen: View {
     
     private func notesValid() -> Bool {
         for f in user.aktuellerFaecherArray {
-            if Double(f.note) == nil || (Double(f.note) ?? 0) > 15 {
-                return false
+            // Leer gelassene Notenfelder sind gültig
+            if !f.note.isEmpty {
+                guard let noteValue = Double(f.note), noteValue <= 15 else {
+                    return false
+                }
             }
         }
         return true
     }
+
+    private func calcPunkte() -> Double? {
+        var sum = 0.0
+        var weightSum = 0.0
+
+        for f in user.aktuellerFaecherArray {
+            // Nur wenn eine Note vorhanden ist
+            if let val = Double(f.note), !f.note.isEmpty, val <= 15 {
+                let weight = Double(f.gewichtung) ?? 1
+                sum += val * weight
+                weightSum += weight
+            }
+        }
+        return weightSum > 0 ? sum / weightSum : nil
+    }
+
     
     private func attemptDismiss() {
         if notesValid() {
@@ -145,19 +164,7 @@ struct SemesterNoteAusrechnen: View {
         }
     }
 
-    // MARK: - Berechnungen
-    private func calcPunkte() -> Double? {
-        var sum = 0.0
-        var weightSum = 0.0
 
-        for f in user.aktuellerFaecherArray where !f.note.isEmpty {
-            guard let val = Double(f.note), val <= 15 else { return nil }
-            let weight = Double(f.gewichtung) ?? 1
-            sum += val * weight
-            weightSum += weight
-        }
-        return weightSum > 0 ? sum / weightSum : nil
-    }
 
     private func calcNote(punkte: Double) -> Double {
         return punkte != 0 ? (17 - punkte)/3 : 6.0
@@ -308,11 +315,15 @@ struct FachRow: View {
     @FocusState var isFocused: Bool   // Fokus-State für diesen TextField
 
     private var noteValid: Bool {
+        // Leere Notenfelder sind gültig
+        if fach.note.isEmpty { return true }
+        
         if let val = Double(fach.note), val <= 15 {
             return true
         }
         return false
     }
+
 
     var body: some View {
         HStack(spacing: 10) {

@@ -12,9 +12,11 @@ struct HomeView: View {
     @EnvironmentObject var user: UserStore
     @Environment(\.managedObjectContext) private var viewContext
     @StateObject private var viewModel = HomeViewModel()
+    @State var showSzenarioPlanner: Bool = false
     
     @State private var selectedSemester: SemesternotenItem? = nil
     @State private var semesterToDelete: SemesternotenItem? = nil
+
     
     var body: some View {
         NavigationView {
@@ -75,6 +77,17 @@ struct HomeView: View {
                     EndnoteSection(user: _user)
                 }
                 
+                
+                Section {
+                                    NavigationLink(destination: SzenarioPlanerView(userStore: user)) {
+                                        HStack {
+                                            Image(systemName: "chart.bar.doc.horizontal")
+                                                .foregroundColor(.blue)
+                                            Text("Szenario Planer öffnen")
+                                        }
+                                        .padding()
+                                    }
+                                }
                 
             }
             .listStyle(.insetGrouped)
@@ -163,6 +176,9 @@ struct CurrentSemesterCardContent: View {
                     .foregroundColor(.mainColor)
             }
             .buttonStyle(.plain) // entfernt den Chevron
+            
+           
+
         }
         .cardStyle()
     }
