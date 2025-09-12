@@ -237,12 +237,15 @@ struct SemesterNoteAusrechnen: View {
                 SemesterNameInput(name: $user.aktuellerNotenName)
                 
                 // 2. Fächerliste
-                FaecherList(faecher: $user.aktuellerFaecherArray).frame(maxHeight: 400) // max Höhe, damit Buttons sichtbar bleiben
+                GeometryReader { geo in
+                        FaecherList(faecher: $user.aktuellerFaecherArray)
+                        .frame(height: geo.size.height).onTapGesture { hideKeyboard() } // füllt den Platz zwischen Überschrift und Buttons
+                    }
                 
-                Spacer()
+                
                 
                 // 3. + Fach hinzufügen
-                AddFachButton(faecher: $user.aktuellerFaecherArray)
+                AddFachButton(faecher: $user.aktuellerFaecherArray).padding(.bottom, keyboard.isKeyboardVisible ?  20 : 0)
                 
                 // 4. Buttons
                 if !keyboard.isKeyboardVisible {
@@ -258,7 +261,7 @@ struct SemesterNoteAusrechnen: View {
                 }
 
                 
-                Spacer()
+                
                 
                 // 5. Banner Ad
                 if !user.userHasGoldPremium {
@@ -342,7 +345,7 @@ struct SemesterNoteAusrechnen: View {
                     Text("2x").tag("2")
                 }
                 .pickerStyle(.segmented)
-                .frame(width: 70)
+                .frame(width: 90)
             }
             .padding(.vertical, 4)
             .background(RoundedRectangle(cornerRadius: 8).fill(Color(.systemBackground).opacity(0.1)))
@@ -383,7 +386,7 @@ struct SemesterNoteAusrechnen: View {
         var body: some View {
             HStack(spacing: 12) {
                 Button(action: warnUser) {
-                    Label("Zurücksetzen", systemImage: "arrow.counterclockwise")
+                    Label("Reset", systemImage: "arrow.counterclockwise")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(RoundedRectangle(cornerRadius: 12).stroke(Color.mainColor))
@@ -391,7 +394,7 @@ struct SemesterNoteAusrechnen: View {
                 }
                 .alert(isPresented: $showDeleteAlert) {
                     Alert(
-                        title: Text("Zurücksetzen"),
+                        title: Text("Reset"),
                         message: Text("Möchtest du diese Seite wirklich zurücksetzen?"),
                         primaryButton: .destructive(Text("Ja"), action: clearAll),
                         secondaryButton: .cancel()
