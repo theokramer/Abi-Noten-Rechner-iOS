@@ -89,32 +89,11 @@ struct PremiumView: View {
                                     selectedTier = 1
                                 }
 
-                                if selectedTier == 1 {
-                                    Picker("Option", selection: $selectedGoldOption) {
-                                        Text("Jährlich").tag(0)
-                                        Text("Lifetime").tag(1)
-                                    }
-                                    .pickerStyle(SegmentedPickerStyle())
-                                    .padding(.horizontal)
-                                }
+                               
                             }
                             .padding(.horizontal)
                             
-                            // Kauf Button wie gehabt
-                            if let tier = selectedTier {
-                                Button(action: {
-                                    purchase(tier: tier, goldOption: selectedGoldOption)
-                                }) {
-                                    Text(tier == 0 ? "BASIC kaufen" : selectedGoldOption == 0 ? "GOLD Jährlich kaufen" : "GOLD Lifetime kaufen")
-                                        .bold()
-                                        .frame(maxWidth: .infinity, minHeight: 60)
-                                        .background(Color.saleColor)
-                                        .foregroundColor(.white)
-                                        .cornerRadius(20)
-                                        .shadow(radius: 5)
-                                }
-                                .padding(.horizontal)
-                            }
+                            
                         }
                     }
 
@@ -134,7 +113,37 @@ struct PremiumView: View {
                         }
                         .padding(.vertical, 20)
                     }
+                    VStack {
+                        
+                    }.frame(height: 100)
                     
+                }
+            }
+            VStack {
+                Spacer()
+                if selectedTier == 1 {
+                    Picker("Option", selection: $selectedGoldOption) {
+                        Text("Jährlich").tag(0)
+                        Text("Lifetime").tag(1)
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding(.horizontal)
+                }
+                
+                // Kauf Button wie gehabt
+                if let tier = selectedTier {
+                    Button(action: {
+                        purchase(tier: tier, goldOption: selectedGoldOption)
+                    }) {
+                        Text(tier == 0 ? "BASIC kaufen" : selectedGoldOption == 0 ? "GOLD Jährlich kaufen" : "GOLD Lifetime kaufen")
+                            .bold()
+                            .frame(maxWidth: .infinity, minHeight: 60)
+                            .background(Color.saleColor)
+                            .foregroundColor(.white)
+                            .cornerRadius(20)
+                            .shadow(radius: 5)
+                    }
+                    .padding(.horizontal)
                 }
             }
         }
@@ -236,21 +245,21 @@ struct BuyButtonRectangle: View {
 struct GoldPremiumView: View {
     @EnvironmentObject var user: UserStore   // <<< hinzufügen
     @Binding var selectedColor:Color
+    @EnvironmentObject var colorStore: ColorStore
     var body: some View {
         VStack {
 
             Text("Farbe auswählen").font(.headline).padding(.top).foregroundColor(.modeColorSwitch).padding(.bottom, 10)
 
-            ColorPicker("Farbe auswählen", selection: $selectedColor).foregroundColor(.modeColor)
-                .frame(maxWidth: screen.width - 100, maxHeight: 50).padding(.horizontal, 10)
-                .padding(.vertical, 5).background(selectedColor).cornerRadius(10)
-                .onChange(of: selectedColor, perform: { _ in
-                    let color = UIColor(selectedColor)
-                    UserDefaults.standard.setColor(color: color, forKey: "selectedColor")
-                    Color.mainColor = selectedColor
-                    user.objectWillChange.send()  // <<< erzwingt Redraw
-                })
+            ColorPicker("Farbe auswählen", selection: $colorStore.mainColor)
+                .frame(maxWidth: screen.width - 100, maxHeight: 50)
+                .padding()
+                .background(colorStore.mainColor)
+                .cornerRadius(10).onChange(of: colorStore.mainColor) { newColor in
+                    colorStore.setColor(newColor) // <-- hier wird gespeichert
+                }
 
+        
             Text("App Icon auswählen").font(.headline).padding(.top).foregroundColor(.modeColorSwitch)
 
             VStack {

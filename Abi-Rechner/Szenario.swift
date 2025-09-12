@@ -83,7 +83,7 @@ struct SzenarioPlanerView: View {
                     HStack {
                         Spacer()
                         VStack(spacing: 8) {
-                            Text("Endnote")
+                            Text("Mögliche Endnote")
                                 .font(.title3).bold()
                                 .foregroundColor(.secondary)
                             Text(String(format: "%.2f", endNote))
@@ -126,7 +126,7 @@ struct SzenarioPlanerView: View {
 
             Spacer()
 
-            TextField("Note", text: value)
+            TextField("Punkte", text: value)
                 .keyboardType(.decimalPad)
                 .multilineTextAlignment(.center)
                 .frame(width: 70)
@@ -176,15 +176,28 @@ struct SzenarioPlanerView: View {
 
     private func bindingForSemesterNote(id: UUID) -> Binding<String> {
         Binding(get: {
-            szenario.semester.first(where: { $0.id == id })?.note ?? ""
+            let punkte = szenario.semester.first(where: { $0.id == id })?.punkte ?? 0.0
+            // Anzeige immer mit Komma
+            return String(format: "%.1f", punkte).replacingOccurrences(of: ".", with: ",")
         }, set: { newValue in
             if let index = szenario.semester.firstIndex(where: { $0.id == id }) {
-                let filtered = newValue.filter { "0123456789.".contains($0) }
-                szenario.semester[index].note = filtered
+                // Nur Zahlen und , oder . erlauben
+                let filtered = newValue.filter { "0123456789,.".contains($0) }
+                // Komma in Punkt umwandeln
+                let standardized = filtered.replacingOccurrences(of: ",", with: ".")
+                // Konvertieren zu Double
+                if let value = Double(standardized) {
+                    // Wertebereich zwischen 0 und 15
+                    szenario.semester[index].punkte = min(max(value, 0.0), 15.0)
+                } else {
+                    szenario.semester[index].punkte = 0.0
+                }
                 berechneEndnote()
             }
         })
     }
+
+
 
     private func bindingForPruefungName(id: UUID) -> Binding<String> {
         Binding(get: {
@@ -212,15 +225,29 @@ struct SzenarioPlanerView: View {
     // MARK: - Endnote
     @discardableResult
     private func berechneEndnote() -> Double {
-        let semesterValues = szenario.semester.compactMap { Double($0.note) }
+        // Semesterpunkte der ausgewählten Semester (hier nehmen wir alle)
+        let semesterValues = szenario.semester.map { $0.punkte }
+        let semesterAverage = semesterValues.isEmpty ? 0.0 : semesterValues.reduce(0, +) / Double(semesterValues.count)
+        
+        // Abi-Prüfungenpunkte als Double
         let pruefungsValues = szenario.pruefungen.compactMap { Double($0.note) }
-        let allValues = semesterValues + pruefungsValues
-
-        endNote = allValues.isEmpty ? 0.0 : allValues.reduce(0, +) / Double(allValues.count)
+        let pruefungsAverage = pruefungsValues.isEmpty ? 0.0 : pruefungsValues.reduce(0, +) / Double(pruefungsValues.count)
+        
+        // Gewichtete Endpunkte wie in AbiClicked
+        let endPunkte = semesterAverage * (2.0 / 3.0) + pruefungsAverage * (1.0 / 3.0)
+        
+        // Punkte -> Note
+        endNote = punkteZuNote(punkte: endPunkte)
         szenario.endNote = endNote
         saveChanges()
         return endNote
     }
+
+    // Punkte -> Note wie bei AbiClicked
+    private func punkteZuNote(punkte: Double) -> Double {
+        return max(1.0, min(6.0, (17.0 - punkte) / 3.0))
+    }
+
 
     // MARK: - Persistenz (UserDefaults)
     private func saveChanges() {
@@ -254,7 +281,8 @@ struct SzenarioPlanerView: View {
 
         szenario.pruefungen = zip(userStore.pruefungsNamenArray,
                                    userStore.pruefungsNotenArray.compactMap { Double($0) })
-            .map { SzenarioPruefung(id: UUID(), name: $0.0, note: String(format: "%.0f", $0.1)) }
+            .map { SzenarioPruefung(id: UUID(), name: $0.0, note: String($0.1)) }
+
 
         endNote = userStore.endNoteAbi != 0 ? userStore.endNoteAbi : berechneEndnote()
         szenario.endNote = endNote

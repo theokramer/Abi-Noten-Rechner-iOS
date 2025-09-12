@@ -9,6 +9,28 @@ import SwiftUI
 import Combine
 import StoreKit
 
+
+class ColorStore: ObservableObject {
+    @Published var mainColor: Color
+
+    init() {
+        if let uiColor = UserDefaults.standard.colorForKey("selectedColor") {
+            self.mainColor = Color(uiColor)
+        } else {
+            self.mainColor = .orange
+        }
+    }
+
+    func setColor(_ color: Color) {
+        self.mainColor = color
+        // Direkt speichern, kein optional nötig
+        let uiColor = UIColor(color)
+        UserDefaults.standard.setColor(uiColor, forKey: "selectedColor")
+    }
+}
+
+
+
 class UserStore: ObservableObject {
     @Published var ausrechnen: Bool = false
     @Published var schnitt: Bool = false
@@ -219,7 +241,6 @@ let defaults = UserDefaults.standard
 let  tablet = screen.width > 430 ? true : false
  
 extension Color {
-    static var mainColor = Color.accentColor
     static let modeColor = Color("modeColor")
     static let modeColorSwitch = Color("modeColorSwitch")
     static let mainColor2 = Color("Orange")
@@ -446,5 +467,21 @@ func handleSwipe2(translation: CGFloat) -> Bool {
         return true
     } else {
         return false
+    }
+}
+
+extension UserDefaults {
+    func setColor(_ color: UIColor, forKey key: String) {
+        do {
+            let data = try NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: false)
+            self.set(data, forKey: key)
+        } catch {
+            print("Fehler beim Speichern der Farbe: \(error)")
+        }
+    }
+
+    func colorForKey(_ key: String) -> UIColor? {
+        guard let data = self.data(forKey: key) else { return nil }
+        return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIColor
     }
 }

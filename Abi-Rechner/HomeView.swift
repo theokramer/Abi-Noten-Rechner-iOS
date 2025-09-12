@@ -12,6 +12,7 @@ struct HomeView: View {
     @EnvironmentObject var user: UserStore
     @Environment(\.managedObjectContext) private var viewContext
     @StateObject private var viewModel = HomeViewModel()
+    @EnvironmentObject var colorStore: ColorStore
     @State var showSzenarioPlanner: Bool = false
     
     @State private var selectedSemester: SemesternotenItem? = nil
@@ -73,54 +74,26 @@ struct HomeView: View {
                         NewSemesterButton(user: _user)
                     }
                 }
-                
-                // MARK: - Endnote Section
-                Section {
-                    EndnoteSection(user: _user)
-                }
-                
-                
-                Section {
-                    if user.userHasGoldPremium {
-                        NavigationLink(destination: SzenarioPlanerView(userStore: user)) {
-                            FeatureCard(
-                                title: "Szenario Planer",
-                                icon: "chart.bar.doc.horizontal",
-                                active: true,
-                                showChevron: false
-                            )
-                            .environmentObject(user)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                    } else {
-                        Button {
-                            // Kein Gold-Premium -> Spenden/Premium-Seite öffnen
-                            user.spendenClicked = true
-                        } label: {
-                            FeatureCard(
-                                title: "Szenario Planer",
-                                icon: "chart.bar.doc.horizontal",
-                                active: false,
-                                showChevron: false
-                            )
-                            .environmentObject(user)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                    }
-                }
-                
-                
+                Color.clear
+                        .frame(height: 80)
+                        .listRowInsets(EdgeInsets())        // optional, damit kein Padding
+                        .listRowBackground(Color.clear)     // Hintergrund passt zur Liste
                 
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Abi Noten Rechner")
+            .navigationViewStyle(StackNavigationViewStyle())
             .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Fertig") { hideKeyboard() }
+                }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     
                     Button(action: { user.spendenClicked = true }) {
                         Image(systemName: "crown.fill")
                             .font(.title3)
-                            .foregroundColor(.mainColor)
+                            .foregroundColor(colorStore.mainColor)
                             .shadow(radius: 1)
                     }
                     
@@ -148,6 +121,7 @@ struct HomeView: View {
             }
                 VStack {
                 Spacer()
+                    EndnoteSzenarioRow(user: _user)
                     if !user.userHasGoldPremium && !user.userHasBasicPremium {
                         BannerADView(bannerID: "ca-app-pub-3263827122305139/2985316177")
                             .frame(height: 60)
@@ -202,11 +176,15 @@ struct HomeView: View {
     }
 }
 
+
+
+
 // MARK: - Current Semester Card Content
 struct CurrentSemesterCardContent: View {
     @Binding var currentSemester: SemesternotenItem
     @ObservedObject var viewModel: HomeViewModel
     @EnvironmentObject var user: UserStore
+    @EnvironmentObject var colorStore: ColorStore
     
     var body: some View {
         VStack(spacing: 12) {
@@ -220,8 +198,8 @@ struct CurrentSemesterCardContent: View {
                     .font(.subheadline.weight(.semibold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
-                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.mainColor.opacity(0.2)))
-                    .foregroundColor(.mainColor)
+                    .background(RoundedRectangle(cornerRadius: 12).fill(colorStore.mainColor.opacity(0.2)))
+                    .foregroundColor(colorStore.mainColor)
             }
             .buttonStyle(.plain) // entfernt den Chevron
             
@@ -251,6 +229,78 @@ struct EndnoteSection: View {
             }
         }
         .padding(.horizontal)
+    }
+}
+
+struct EndnoteButtonView: View {
+    let title: String
+    let icon: String
+    let active: Bool
+    @EnvironmentObject var colorStore: ColorStore
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(active ? .white : .gray)
+            Text(title)
+                .font(.subheadline.bold())
+                .foregroundColor(active ? .white : .gray)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(active ? colorStore.mainColor : Color.gray.opacity(0.3))
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+        .contentShape(Rectangle())
+    }
+}
+
+
+struct EndnoteSzenarioRow: View {
+    @EnvironmentObject var user: UserStore
+    @State private var navigateToEndnote = false
+    @State private var navigateToSzenario = false
+
+    var body: some View {
+        VStack {
+            HStack(spacing: 16) {
+                // Endnote Button
+                Button {
+                    if user.userHasGoldPremium {
+                        navigateToEndnote = true
+                    } else {
+                        user.spendenClicked = true
+                    }
+                } label: {
+                    EndnoteButtonView(title: "Endnote berechnen",
+                                      icon: "graduationcap.fill",
+                                      active: user.userHasGoldPremium)
+                }
+
+                // Szenario Button
+                Button {
+                    if user.userHasGoldPremium {
+                        navigateToSzenario = true
+                    } else {
+                        user.spendenClicked = true
+                    }
+                } label: {
+                    EndnoteButtonView(title: "Szenario Planer",
+                                      icon: "chart.bar.doc.horizontal",
+                                      active: user.userHasGoldPremium)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+
+            // Unsichtbare NavigationLinks
+            NavigationLink(destination: AbiClicked().environmentObject(user),
+                           isActive: $navigateToEndnote) { EmptyView() }.hidden()
+            NavigationLink(destination: SzenarioPlanerView(userStore: user),
+                           isActive: $navigateToSzenario) { EmptyView() }.hidden()
+        }
     }
 }
 
@@ -408,6 +458,7 @@ private struct FeatureCard: View {
     let icon: String
     let active: Bool
     let showChevron: Bool // neu
+    @EnvironmentObject var colorStore: ColorStore
 
     init(title: String, icon: String, active: Bool, showChevron: Bool = false) {
         self.title = title
@@ -420,9 +471,9 @@ private struct FeatureCard: View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundColor(active ? .mainColor : .gray)
+                .foregroundColor(active ? colorStore.mainColor : .gray)
             Text(title)
-                .font(.subheadline.weight(.semibold)).foregroundColor(active ? .mainColor : .gray)
+                .font(.subheadline.weight(.semibold)).foregroundColor(active ? colorStore.mainColor : .gray)
             Spacer()
             if showChevron && active { Image(systemName: "chevron.right").foregroundColor(.secondary) }
         }

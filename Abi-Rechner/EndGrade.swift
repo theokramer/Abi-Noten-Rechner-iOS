@@ -12,6 +12,7 @@ struct AbiClicked: View {
     
     @EnvironmentObject var user: UserStore
     @Environment(\.managedObjectContext) private var viewContext
+    @EnvironmentObject var colorStore: ColorStore
     
     @State private var endPunkteSchnitt: Double = -1
     @State private var shareNote: SemesternotenItem = SemesternotenItem(id: UUID(), name: "", semesterNote: -1, semesterPunkte: 0.0, date: Date())
@@ -83,7 +84,7 @@ struct AbiClicked: View {
                                         Text(String(format: "%.2f", endPunkteSchnitt))
                                             .font(.title2)
                                             .bold()
-                                            .foregroundColor(.mainColor)
+                                            .foregroundColor(colorStore.mainColor)
                                     }
                                     
                                     HStack {
@@ -94,7 +95,7 @@ struct AbiClicked: View {
                                         Text(String(format: "%.2f", user.endNoteAbi))
                                             .font(.title2)
                                             .bold()
-                                            .foregroundColor(.mainColor)
+                                            .foregroundColor(colorStore.mainColor)
                                     }
                                 }
                                 .padding()
@@ -116,7 +117,7 @@ struct AbiClicked: View {
                                     }
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity, minHeight: 50)
-                                    .background(RoundedRectangle(cornerRadius: 16).fill(Color.mainColor))
+                                    .background(RoundedRectangle(cornerRadius: 16).fill(colorStore.mainColor))
                                     .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
                                 }
                             }
@@ -133,6 +134,12 @@ struct AbiClicked: View {
                     updateEndnote()
                 }.sheet(isPresented: $showShareSheet) {
                     ShareSheet(items: [shareText(note: user.endNoteAbi)])
+                }.toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        
+                        Spacer()
+                        Button("Fertig") { hideKeyboard() }
+                    }
                 }
 
 
@@ -268,6 +275,7 @@ struct SemesterCard: View {
     var item: SemesternotenItem
     var isSelected: Bool
     var action: () -> Void
+    @EnvironmentObject var colorStore: ColorStore
     
     var body: some View {
         Button(action: action) {
@@ -282,7 +290,7 @@ struct SemesterCard: View {
                 }
                 Spacer()
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(isSelected ? .mainColor : .gray)
+                    .foregroundColor(isSelected ? colorStore.mainColor : .gray)
                     .font(.title2)
             }
             .padding(10)

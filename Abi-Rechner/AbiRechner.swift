@@ -12,6 +12,7 @@ import GoogleMobileAds
 
 @main
 struct AbiRechner: App {
+    @StateObject var colorStore = ColorStore()
     let persistenceController = PersistenceController.shared
     let selectedColor: UIColor = UserDefaults.standard.colorForKey(key: "selectedColor") ?? UIColor(Color("Orange"))
 
@@ -98,8 +99,8 @@ struct AbiRechner: App {
 
     var body: some Scene {
         WindowGroup {
-            StartView(activeScene: $activeScene).accentColor(Color(selectedColor))
-                .environment(\.managedObjectContext, persistenceController.container.viewContext).environmentObject(user).onAppear {
+            StartView(activeScene: $activeScene).accentColor(colorStore.mainColor)
+                .environment(\.managedObjectContext, persistenceController.container.viewContext).environmentObject(user).environmentObject(colorStore).onAppear {
                     if Products.store.isProductPurchased(Products.basicSub) {
                         UserStore().basicPremium = true
                     } else {

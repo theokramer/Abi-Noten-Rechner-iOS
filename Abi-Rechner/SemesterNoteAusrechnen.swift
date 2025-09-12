@@ -29,6 +29,7 @@ class KeyboardObserver: ObservableObject {
 struct SemesterNoteAusrechnen: View {
     @StateObject private var keyboard = KeyboardObserver()
     @State private var showWarningAlert = false
+    @EnvironmentObject var colorStore: ColorStore
 
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var user: UserStore
@@ -73,63 +74,90 @@ struct SemesterNoteAusrechnen: View {
 
     
     private func attemptDismiss() {
+        // Prüfen, ob Noten gültig sind
         if notesValid() {
-            saveAndDismiss()
+            let punkte = calcPunkte()
+            let note = punkte != nil ? calcNote(punkte: punkte!) : nil
+            saveSemester(punkte: punkte, note: note)
+            dismiss()
         } else {
             showWarningAlert = true
         }
     }
+
     
-    private func saveSemester(punkte: Double, note: Double) {
+    private func saveSemester(punkte: Double?, note: Double?) {
+        // Prüfen, ob überhaupt eine Note existiert
+        let hasNotes = user.aktuellerFaecherArray.contains(where: { !$0.note.isEmpty })
+
+        // Wenn keine Noten vorhanden und es ein Update ist, das Semester löschen
+        if !hasNotes {
             if user.updateMode, let uuid = UUID(uuidString: user.aktuelleID) {
                 let request = NSFetchRequest<Semesternote>(entityName: "Semesternote")
                 request.predicate = NSPredicate(format: "id == %@", uuid as CVarArg)
-                
                 do {
                     if let semesterObj = try viewContext.fetch(request).first {
-                        // Alte Fächer löschen
-                        if let fächer = semesterObj.faecher as? Set<Fach> {
-                            for fach in fächer { viewContext.delete(fach) }
-                        }
-                        
-                        // Semester aktualisieren
-                        semesterObj.name = user.aktuellerNotenName
-                        semesterObj.semesterNote = note
-                        semesterObj.semesterPunkte = punkte
-                        semesterObj.date = Date()
-                        
-                        // Neue Fächer hinzufügen
-                        for f in user.aktuellerFaecherArray {
-                            let neuesFach = Fach(context: viewContext)
-                            neuesFach.id = f.id
-                            neuesFach.name = f.name
-                            neuesFach.note = f.note
-                            neuesFach.gewichtung = Int64(f.gewichtung) ?? 1
-                            neuesFach.position = f.position
-                            neuesFach.alsSemesterFach = semesterObj
-                        }
-                        
+                        viewContext.delete(semesterObj)
                         try viewContext.save()
                         user.semesterArray = fetchAllSemesterNoten(viewContext: viewContext) ?? []
                         user.refreshSemesterArray()
-                        return // Wichtig: return, damit nicht unten ein neues Semester erstellt wird
                     }
                 } catch {
                     print(error.localizedDescription)
                 }
             }
-            
-            // Wenn kein Update, neues Semester erstellen
+            return
+        }
+
+        // Wenn Noten vorhanden sind, normales Speichern
+        guard let punkte = punkte, let note = note else { return }
+        
+        if user.updateMode, let uuid = UUID(uuidString: user.aktuelleID) {
+            let request = NSFetchRequest<Semesternote>(entityName: "Semesternote")
+            request.predicate = NSPredicate(format: "id == %@", uuid as CVarArg)
+            do {
+                if let semesterObj = try viewContext.fetch(request).first {
+                    // Alte Fächer löschen
+                    if let fächer = semesterObj.faecher as? Set<Fach> {
+                        for fach in fächer { viewContext.delete(fach) }
+                    }
+
+                    // Semester aktualisieren
+                    semesterObj.name = user.aktuellerNotenName
+                    semesterObj.semesterNote = note
+                    semesterObj.semesterPunkte = punkte
+                    semesterObj.date = Date()
+
+                    // Neue Fächer hinzufügen
+                    for f in user.aktuellerFaecherArray {
+                        let neuesFach = Fach(context: viewContext)
+                        neuesFach.id = f.id
+                        neuesFach.name = f.name
+                        neuesFach.note = f.note
+                        neuesFach.gewichtung = Int64(f.gewichtung) ?? 1
+                        neuesFach.position = f.position
+                        neuesFach.alsSemesterFach = semesterObj
+                    }
+
+                    try viewContext.save()
+                    user.semesterArray = fetchAllSemesterNoten(viewContext: viewContext) ?? []
+                    user.refreshSemesterArray()
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        } else {
+            // Neues Semester erstellen
             let neueNote = Semesternote(context: viewContext)
             neueNote.id = UUID()
             user.aktuelleID = neueNote.id!.uuidString
             neueNote.name = user.aktuellerNotenName.isEmpty
-            ? "\(user.semesterArray.count + 1). Semester"
-            : user.aktuellerNotenName
+                ? "\(user.semesterArray.count + 1). Semester"
+                : user.aktuellerNotenName
             neueNote.date = Date()
             neueNote.semesterNote = note
             neueNote.semesterPunkte = punkte
-            
+
             for f in user.aktuellerFaecherArray {
                 let neuesFach = Fach(context: viewContext)
                 neuesFach.id = f.id
@@ -139,7 +167,7 @@ struct SemesterNoteAusrechnen: View {
                 neuesFach.position = f.position
                 neuesFach.alsSemesterFach = neueNote
             }
-            
+
             do {
                 try viewContext.save()
                 user.semesterArray = fetchAllSemesterNoten(viewContext: viewContext) ?? []
@@ -148,6 +176,8 @@ struct SemesterNoteAusrechnen: View {
                 print(error.localizedDescription)
             }
         }
+    }
+
 
     // MARK: - OnAppear: initialisieren
     private func initialize() {
@@ -209,10 +239,11 @@ struct SemesterNoteAusrechnen: View {
                 if !keyboard.isKeyboardVisible {
                     HStack {
                         Button(action: attemptDismiss) {
-                            Text("Speichern")
+                            let hasNotes = user.aktuellerFaecherArray.contains(where: { !$0.note.isEmpty })
+                            Text(hasNotes ?"Speichern" : "Abbrechen")
                                 .frame(maxWidth: .infinity)
                                 .padding(12)
-                                .background(RoundedRectangle(cornerRadius: 12).fill(Color.mainColor))
+                                .background(RoundedRectangle(cornerRadius: 12).fill(colorStore.mainColor))
                                 .foregroundColor(.modeColor)
                         }
                     }
@@ -231,13 +262,18 @@ struct SemesterNoteAusrechnen: View {
         .onAppear { initialize() }
         .navigationBarBackButtonHidden(true) // Standard Back-Button ausblenden
                 .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Fertig") { hideKeyboard() }
+                    }
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button(action: {
                             attemptDismiss() // Alert prüfen
                         }) {
                             HStack {
                                 Image(systemName: "chevron.left")
-                                Text("Speichern")
+                                let hasNotes = user.aktuellerFaecherArray.contains(where: { !$0.note.isEmpty })
+                                Text(hasNotes ?"Speichern" : "Abbrechen")
                             }
                         }
                     }
@@ -356,7 +392,8 @@ struct FachRow: View {
 // 2. AddFachButton anpassen
 struct AddFachButton: View {
     @Binding var faecher: [FachItem]
-    @Binding var lastAddedFachID: UUID? 
+    @Binding var lastAddedFachID: UUID?
+    @EnvironmentObject var colorStore: ColorStore
     var body: some View {
         Button {
             let newFach = FachItem(id: UUID(), name: "", note: "", gewichtung: "1", position: Int64(faecher.count + 1))
@@ -367,10 +404,10 @@ struct AddFachButton: View {
                 Image(systemName: "plus.circle.fill")
                 Text("Fach hinzufügen")
             }
-            .foregroundColor(.mainColor)
+            .foregroundColor(colorStore.mainColor)
             .padding(10)
             .frame(maxWidth: .infinity)
-            .background(RoundedRectangle(cornerRadius: 12).stroke(Color.mainColor))
+            .background(RoundedRectangle(cornerRadius: 12).stroke(colorStore.mainColor))
         }
     }
 }
@@ -380,6 +417,7 @@ struct AddFachButton: View {
     
     struct ActionButtons: View {
         @Binding var showDeleteAlert: Bool
+        @EnvironmentObject var colorStore: ColorStore
         var warnUser: () -> Void
         var clearAll: () -> Void
         var checkIfTrue: (Bool) -> Void
@@ -393,7 +431,7 @@ struct AddFachButton: View {
                     Text("Speichern")
                         .frame(maxWidth: .infinity)
                         .padding(12)
-                        .background(RoundedRectangle(cornerRadius: 12).fill(Color.mainColor))
+                        .background(RoundedRectangle(cornerRadius: 12).fill(colorStore.mainColor))
                         .foregroundColor(.modeColor)
                 }
                
