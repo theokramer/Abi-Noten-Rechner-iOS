@@ -219,7 +219,7 @@ struct SemesterNoteAusrechnen: View {
                     
                 }
 
-                if !user.userHasGoldPremium {
+                if !user.userHasGoldPremium && !user.userHasBasicPremium {
                     BannerADView(bannerID: "ca-app-pub-3263827122305139/3463838331")
                         .frame(height: 60)
                         .padding(.top, 10)

@@ -65,7 +65,6 @@ struct StartView: View {
         .onAppear {
             setupUserPremium()
             setupSaleColor()
-            loadInterstitial()
         }
     }
 }

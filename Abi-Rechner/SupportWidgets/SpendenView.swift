@@ -59,7 +59,8 @@ struct PremiumView: View {
                                     price: "1,99€ / Jahr",
                                     features: [
                                         ("infinity", "Unendlich viele Semester anlegen"),
-                                        ("list.bullet.rectangle", "Semesterübersicht freischalten")
+                                        ("list.bullet.rectangle", "Semesterübersicht freischalten"),
+                                        ("hand.raised.fill", "Keine Werbung"),
                                     ],
                                     isSelected: selectedTier == 0,
                                     colorScheme: colorScheme
@@ -77,10 +78,10 @@ struct PremiumView: View {
                                     features: [
                                         ("crown.fill", "Alles von BASIC"),
                                         ("graduationcap.fill", "Notendurchschnitt aller Semester"),
-                                        ("hand.raised.fill", "Keine Werbung"),
                                         ("paintbrush.fill", "Individuelle Farbe & App Icon"),
                                         ("function", "Endnote berechnen"),
-                                        ("sparkles", "Probewoche starten")
+                                        ("sparkles", "Probewoche starten"),
+                                        ("chart.bar.doc.horizontal", "Szenario Planer • NEW") // NEUES FEATURE
                                     ],
                                     isSelected: selectedTier == 1,
                                     colorScheme: colorScheme

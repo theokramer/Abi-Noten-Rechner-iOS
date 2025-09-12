@@ -36,6 +36,7 @@
 		207D814325C4A2F700ADD682 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 207D814225C4A2F700ADD682 /* StoreKit.framework */; };
 		20958EB72E7242CA00B70058 /* EndGrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20958EB62E7242C800B70058 /* EndGrade.swift */; };
 		20958EC32E7450EA00B70058 /* Szenario.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20958EC22E7450E900B70058 /* Szenario.swift */; };
+		20958EC52E74813700B70058 /* AdManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20958EC42E74813500B70058 /* AdManager.swift */; };
 		4FAC0928E1C4CA9A35848EB3 /* Pods_WidgetExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA252F6FA1D2E248FEF2F929 /* Pods_WidgetExtension.framework */; };
 		7A141AFF74BDC4C7378B75E5 /* Pods_NotenRechner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CAB817A3126BE728D04E909 /* Pods_NotenRechner.framework */; };
 /* End PBXBuildFile section */
@@ -101,6 +102,7 @@
 		207D815E25C551AC00ADD682 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
 		20958EB62E7242C800B70058 /* EndGrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndGrade.swift; sourceTree = "<group>"; };
 		20958EC22E7450E900B70058 /* Szenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Szenario.swift; sourceTree = "<group>"; };
+		20958EC42E74813500B70058 /* AdManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdManager.swift; sourceTree = "<group>"; };
 		20DDBFBC27607CE500E80658 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Widget.strings; sourceTree = "<group>"; };
 		20FD2A3727AEC84D00F8AF40 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		28FB64D65452EFAAF210EBD3 /* Pods-WidgetExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WidgetExtension.debug.xcconfig"; path = "Target Support Files/Pods-WidgetExtension/Pods-WidgetExtension.debug.xcconfig"; sourceTree = "<group>"; };
@@ -233,6 +235,7 @@
 		20958EBA2E724BEC00B70058 /* SupportWidgets */ = {
 			isa = PBXGroup;
 			children = (
+				20958EC42E74813500B70058 /* AdManager.swift */,
 				2033DB9427907FF4005653C1 /* SpendenView.swift */,
 				2033DB9627907FF4005653C1 /* UserStore.swift */,
 				2033DB9527907FF4005653C1 /* StartView.swift */,
@@ -465,6 +468,7 @@
 				207B30AB2740009800A15146 /* IAPManager.swift in Sources */,
 				207AF1D927AA99640017FBCF /* GlobalFuncs.swift in Sources */,
 				207B30AE2740012300A15146 /* Products.swift in Sources */,
+				20958EC52E74813700B70058 /* AdManager.swift in Sources */,
 				207D813625C47DF300ADD682 /* Fach+CoreDataClass.swift in Sources */,
 				201AC7F925BC4A6F00B236F3 /* AbiRechner.swift in Sources */,
 			);
@@ -633,7 +637,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = NotenRechner.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"Abi-Rechner/Preview Content\"";
 				DEVELOPMENT_TEAM = 67AYJ24F97;
 				ENABLE_PREVIEWS = YES;
@@ -664,7 +668,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = NotenRechner.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"Abi-Rechner/Preview Content\"";
 				DEVELOPMENT_TEAM = 67AYJ24F97;
 				ENABLE_PREVIEWS = YES;

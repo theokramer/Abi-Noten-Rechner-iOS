@@ -31,6 +31,9 @@ class UserStore: ObservableObject {
     @Published var supportClicked = false
     @Published var noteTeilenClicked: Bool = false
     @Published var sendEmail = false
+    @Published var interstitialCount: Int = defaults.integer(forKey: "interstitialCount") {
+        didSet { defaults.set(interstitialCount, forKey: "interstitialCount") }
+    }
     @Published var userHasBasicPremium = defaults.bool(forKey: "userHasBasicPremium") {
         didSet {
             defaults.set(userHasBasicPremium, forKey: "userHasBasicPremium")

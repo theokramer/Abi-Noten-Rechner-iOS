@@ -19,7 +19,9 @@ struct HomeView: View {
 
     
     var body: some View {
+        
         NavigationView {
+            ZStack {
             List {
                 // MARK: - Aktuelles Semester Section
                 Section(
@@ -58,7 +60,7 @@ struct HomeView: View {
                                 } label: {
                                     Label("Löschen", systemImage: "trash")
                                 }
-
+                                
                                 // Teilen-Button
                                 Button() {
                                     shareNote(item: item)
@@ -79,15 +81,35 @@ struct HomeView: View {
                 
                 
                 Section {
-                                    NavigationLink(destination: SzenarioPlanerView(userStore: user)) {
-                                        HStack {
-                                            Image(systemName: "chart.bar.doc.horizontal")
-                                                .foregroundColor(.blue)
-                                            Text("Szenario Planer öffnen")
-                                        }
-                                        .padding()
-                                    }
-                                }
+                    if user.userHasGoldPremium {
+                        NavigationLink(destination: SzenarioPlanerView(userStore: user)) {
+                            FeatureCard(
+                                title: "Szenario Planer",
+                                icon: "chart.bar.doc.horizontal",
+                                active: true,
+                                showChevron: false
+                            )
+                            .environmentObject(user)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    } else {
+                        Button {
+                            // Kein Gold-Premium -> Spenden/Premium-Seite öffnen
+                            user.spendenClicked = true
+                        } label: {
+                            FeatureCard(
+                                title: "Szenario Planer",
+                                icon: "chart.bar.doc.horizontal",
+                                active: false,
+                                showChevron: false
+                            )
+                            .environmentObject(user)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                }
+                
+                
                 
             }
             .listStyle(.insetGrouped)
@@ -95,12 +117,12 @@ struct HomeView: View {
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     
-                        Button(action: { user.spendenClicked = true }) {
-                            Image(systemName: "crown.fill") // professionelles Premium-Icon
-                                .font(.title3)
-                                .foregroundColor(.mainColor)
-                                .shadow(radius: 1)
-                        }
+                    Button(action: { user.spendenClicked = true }) {
+                        Image(systemName: "crown.fill")
+                            .font(.title3)
+                            .foregroundColor(.mainColor)
+                            .shadow(radius: 1)
+                    }
                     
                 }
             }
@@ -108,8 +130,33 @@ struct HomeView: View {
             .onAppear {
                 viewModel.loadSemesterNoten(context: viewContext)
                 user.semesterArray = viewModel.semesterNoten
+                
+                if(!user.userHasGoldPremium && !user.userHasBasicPremium) {
+                    // Interstitial nur alle 3 Aufrufe anzeigen
+                    if user.interstitialCount % 3 == 0 {
+                        if let root = UIApplication.shared.topMostViewController() {
+                            AdManager.shared.showInterstitial(from: root)
+                        }
+                    }
+                    user.interstitialCount += 1
+                    
+                    // Interstitial laden (falls noch nicht geladen)
+                    AdManager.shared.loadInterstitial(adUnitID: "ca-app-pub-3263827122305139/8196524994")
+                }
+                
+                
             }
+                VStack {
+                Spacer()
+                    if !user.userHasGoldPremium && !user.userHasBasicPremium {
+                        BannerADView(bannerID: "ca-app-pub-3263827122305139/2985316177")
+                            .frame(height: 60)
+                            .padding(.top, 10)
+                    }
+                }
         }
+        
+    }
     }
     private func shareNote(item: SemesternotenItem) {
         let text = """
@@ -121,6 +168,7 @@ struct HomeView: View {
         let av = UIActivityViewController(activityItems: [text], applicationActivities: nil)
         UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
     }
+
 
 
 
@@ -456,5 +504,25 @@ struct BannerADView: UIViewRepresentable {
 struct PhoneHomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
+    }
+}
+
+
+import UIKit
+
+extension UIApplication {
+    func topMostViewController(base: UIViewController? = UIApplication.shared.connectedScenes
+                                .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+                                .first?.rootViewController) -> UIViewController? {
+        if let nav = base as? UINavigationController {
+            return topMostViewController(base: nav.visibleViewController)
+        }
+        if let tab = base as? UITabBarController, let selected = tab.selectedViewController {
+            return topMostViewController(base: selected)
+        }
+        if let presented = base?.presentedViewController {
+            return topMostViewController(base: presented)
+        }
+        return base
     }
 }

@@ -1,22 +1,21 @@
 import SwiftUI
 
 // ----------------------------
-// Models (Codable für Speicherung)
+// Models
 // ----------------------------
 struct SzenarioSemester: Identifiable, Codable {
     let id: UUID
     var name: String
-    var note: Double
+    var note: String
     var punkte: Double
 }
 
 struct SzenarioPruefung: Identifiable, Codable {
     let id: UUID
     var name: String
-    var note: Double
+    var note: String
 }
 
-// AbiturSzenario jetzt mit endNote, damit wir das vollständig persistieren können
 struct AbiturSzenario: Identifiable, Codable {
     let id: UUID
     var semester: [SzenarioSemester]
@@ -34,65 +33,69 @@ struct SzenarioPlanerView: View {
     @State private var endNote: Double = 0.0
     @FocusState private var focusedField: UUID?
 
-    // Key für lokale Speicherung (UserDefaults) – Backup
     private let storageKey = "AbiNoten.SzenarioPlaner.v1"
-    // Dateiname im Documents-Verzeichnis – primäre Speicherung
-    private var scenarioURL: URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("szenario_planer_v1.json")
-    }
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 24) {
-
-                    // MARK: Semester
-                    sectionCard(title: "Semester") {
-                        ForEach(szenario.semester) { semester in
-                            itemRow(
-                                id: semester.id,
-                                name: bindingForSemesterName(id: semester.id),
-                                value: bindingForSemesterNote(id: semester.id),
-                                placeholder: "Semester"
-                            )
-                        }
-                        addCard(title: "Neues Semester", action: addSemester)
+            List {
+                // MARK: Semester Section
+                Section(header: Text("Semester").font(.title3).bold()) {
+                    ForEach(szenario.semester) { semester in
+                        itemRow(
+                            id: semester.id,
+                            name: bindingForSemesterName(id: semester.id),
+                            value: bindingForSemesterNote(id: semester.id),
+                            placeholder: "Semester"
+                        )
                     }
+                    .onDelete(perform: deleteSemester)
 
-                    // MARK: Prüfungen
-                    sectionCard(title: "Abi Prüfungen") {
-                        ForEach(szenario.pruefungen) { fach in
-                            itemRow(
-                                id: fach.id,
-                                name: bindingForPruefungName(id: fach.id),
-                                value: bindingForPruefungNote(id: fach.id),
-                                placeholder: "Prüfung"
-                            )
-                        }
-                        addCard(title: "Neue Prüfung", action: addPruefung)
-                    }
-
-                    // MARK: Endnote
-                    VStack(spacing: 8) {
-                        Text("Endnote")
-                            .font(.title3).bold()
-                            .foregroundColor(.secondary)
-                        Text(String(format: "%.2f", endNote))
-                            .font(.system(size: 42, weight: .heavy, design: .rounded))
+                    Button {
+                        addSemester()
+                    } label: {
+                        Label("Neues Semester", systemImage: "plus.circle.fill")
                             .foregroundColor(.accentColor)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.accentColor.opacity(0.1))
-                            .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
-                    )
-                    .padding(.horizontal)
                 }
-                .padding(.vertical)
+
+                // MARK: Abi Prüfungen Section
+                Section(header: Text("Abi Prüfungen").font(.title3).bold()) {
+                    ForEach(szenario.pruefungen) { fach in
+                        itemRow(
+                            id: fach.id,
+                            name: bindingForPruefungName(id: fach.id),
+                            value: bindingForPruefungNote(id: fach.id),
+                            placeholder: "Prüfung"
+                        )
+                    }
+                    .onDelete(perform: deletePruefung)
+
+                    Button {
+                        addPruefung()
+                    } label: {
+                        Label("Neue Prüfung", systemImage: "plus.circle.fill")
+                            .foregroundColor(.accentColor)
+                    }
+                }
+
+                // MARK: Endnote Section
+                Section {
+                    HStack {
+                        Spacer()
+                        VStack(spacing: 8) {
+                            Text("Endnote")
+                                .font(.title3).bold()
+                                .foregroundColor(.secondary)
+                            Text(String(format: "%.2f", endNote))
+                                .font(.system(size: 42, weight: .heavy, design: .rounded))
+                                .foregroundColor(.accentColor)
+                        }
+                        Spacer()
+                    }
+                    .padding()
+                }
             }
+            .listStyle(.insetGrouped)
             .navigationTitle("Szenario Planung")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -106,138 +109,15 @@ struct SzenarioPlanerView: View {
                 }
             }
             .onAppear {
-                // Lade-Prio:
-                // 1) Datei im Documents (robust)
-                // 2) UserDefaults (Fallback)
-                // 3) Falls nichts vorhanden -> initial aus userStore bauen und speichern
                 if !loadScenarioFromStorage() {
                     initializeScenarioFromUserStoreAndSave()
-                } else {
-                    // geladen -> endNote übernehmen
-                    endNote = szenario.endNote
                 }
             }
         }
     }
 
-    // ----------------------------
-    // Persistenz: Laden / Speichern (Datei + Backup in UserDefaults)
-    // ----------------------------
-    /// Versucht das Szenario aus Datei oder UserDefaults zu laden. Falls erfolgreich: szenario gesetzt und true zurück.
-    private func loadScenarioFromStorage() -> Bool {
-        // 1) Datei
-        if FileManager.default.fileExists(atPath: scenarioURL.path) {
-            do {
-                let data = try Data(contentsOf: scenarioURL)
-                let decoder = JSONDecoder()
-                let stored = try decoder.decode(AbiturSzenario.self, from: data)
-                self.szenario = stored
-                self.endNote = stored.endNote
-                return true
-            } catch {
-                print("Fehler beim Lesen der Szenario-Datei:", error)
-                // Falls Datei defekt ist, versuchen wir es mit UserDefaults weiter unten
-            }
-        }
-
-        // 2) Fallback -> UserDefaults
-        if let data = UserDefaults.standard.data(forKey: storageKey) {
-            let decoder = JSONDecoder()
-            if let stored = try? decoder.decode(AbiturSzenario.self, from: data) {
-                self.szenario = stored
-                self.endNote = stored.endNote
-                return true
-            }
-        }
-
-        return false
-    }
-
-    /// Speichert das aktuelle szenario (inkl. endNote) in Datei (atomar) und als Backup in UserDefaults.
-    private func saveScenarioToStorage() {
-        var toSave = szenario
-        toSave.endNote = endNote
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .sortedKeys
-        do {
-            let data = try encoder.encode(toSave)
-            // Atomar in Datei schreiben
-            try data.write(to: scenarioURL, options: .atomic)
-            // Backup in UserDefaults (falls du mal wechseln möchtest)
-            UserDefaults.standard.set(data, forKey: storageKey)
-        } catch {
-            print("Fehler beim Speichern des Szenarios:", error)
-        }
-    }
-
-    /// Initialisiert das Szenario einmalig aus userStore (App-Daten) und speichert es direkt.
-    private func initializeScenarioFromUserStoreAndSave() {
-        szenario.semester = userStore.semesterArray.map {
-            SzenarioSemester(id: $0.id, name: $0.name, note: $0.semesterNote, punkte: $0.semesterPunkte)
-        }
-        let names = userStore.pruefungsNamenArray
-        let notes = userStore.pruefungsNotenArray.compactMap { Double($0) }
-        szenario.pruefungen = zip(names, notes).map { SzenarioPruefung(id: UUID(), name: $0.0, note: $0.1) }
-
-        // Endnote: wenn userStore.endNoteAbi gesetzt, nimm das, sonst berechne
-        if userStore.endNoteAbi != 0 {
-            endNote = userStore.endNoteAbi
-        } else {
-            berechneEndnote()
-        }
-        szenario.endNote = endNote
-        saveScenarioToStorage()
-    }
-
-    private func loadFromUserStore() {
-        // Semester übernehmen
-        szenario.semester = userStore.semesterArray.map {
-            SzenarioSemester(id: $0.id,
-                             name: $0.name,
-                             note: $0.semesterNote,
-                             punkte: $0.semesterPunkte)
-        }
-
-        // Abi-Prüfungen übernehmen
-        szenario.pruefungen = userStore.aktuellerAbiNotenArray.map {
-            SzenarioPruefung(id: $0.id,
-                             name: $0.name,
-                             note: Double($0.note) ?? 0.0)
-        }
-
-        berechneEndnote()
-    }
-
-    private func resetSzenario() {
-        // Reset für Semester + Abi-Prüfungen
-        loadFromUserStore()
-        focusedField = nil
-        saveChanges()
-    }
-
-
-    // ----------------------------
-    // UI Komponenten (wie vorher)
-    // ----------------------------
-    private func sectionCard<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(title)
-                .font(.title3).bold()
-                .foregroundColor(.primary)
-                .padding(.horizontal, 4)
-
-            VStack(spacing: 12, content: content)
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(.systemBackground))
-                        .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
-                )
-        }
-        .padding(.horizontal)
-    }
-
-    private func itemRow(id: UUID, name: Binding<String>, value: Binding<Double>, placeholder: String) -> some View {
+    // MARK: - UI Row
+    private func itemRow(id: UUID, name: Binding<String>, value: Binding<String>, placeholder: String) -> some View {
         HStack(spacing: 12) {
             TextField(placeholder, text: name)
                 .padding(10)
@@ -246,7 +126,7 @@ struct SzenarioPlanerView: View {
 
             Spacer()
 
-            TextField("Note", value: value, format: .number)
+            TextField("Note", text: value)
                 .keyboardType(.decimalPad)
                 .multilineTextAlignment(.center)
                 .frame(width: 70)
@@ -254,29 +134,35 @@ struct SzenarioPlanerView: View {
                 .background(RoundedRectangle(cornerRadius: 10).fill(Color(.systemGray6)))
                 .focused($focusedField, equals: id)
         }
+        .padding(.vertical, 4)
     }
 
-    private func addCard(title: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack {
-                Image(systemName: "plus.circle.fill")
-                Text(title)
-            }
-            .font(.body.bold())
-            .foregroundColor(.accentColor)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.accentColor.opacity(0.1))
-            )
-        }
-        .padding(.horizontal)
+    // MARK: - Add/Delete
+    private func addSemester() {
+        let newSemester = SzenarioSemester(id: UUID(), name: "", note: "", punkte: 0.0)
+        szenario.semester.append(newSemester)
+        focusedField = newSemester.id
+        saveChanges()
     }
 
-    // ----------------------------
-    // Bindings (speichern Szenario separat)
-    // ----------------------------
+    private func addPruefung() {
+        let newFach = SzenarioPruefung(id: UUID(), name: "", note: "")
+        szenario.pruefungen.append(newFach)
+        focusedField = newFach.id
+        saveChanges()
+    }
+
+    private func deleteSemester(at offsets: IndexSet) {
+        szenario.semester.remove(atOffsets: offsets)
+        berechneEndnote()
+    }
+
+    private func deletePruefung(at offsets: IndexSet) {
+        szenario.pruefungen.remove(atOffsets: offsets)
+        berechneEndnote()
+    }
+
+    // MARK: - Bindings
     private func bindingForSemesterName(id: UUID) -> Binding<String> {
         Binding(get: {
             szenario.semester.first(where: { $0.id == id })?.name ?? ""
@@ -288,14 +174,14 @@ struct SzenarioPlanerView: View {
         })
     }
 
-    private func bindingForSemesterNote(id: UUID) -> Binding<Double> {
+    private func bindingForSemesterNote(id: UUID) -> Binding<String> {
         Binding(get: {
-            szenario.semester.first(where: { $0.id == id })?.note ?? 0.0
+            szenario.semester.first(where: { $0.id == id })?.note ?? ""
         }, set: { newValue in
             if let index = szenario.semester.firstIndex(where: { $0.id == id }) {
-                szenario.semester[index].note = max(0, min(newValue, 15))
+                let filtered = newValue.filter { "0123456789.".contains($0) }
+                szenario.semester[index].note = filtered
                 berechneEndnote()
-                saveChanges()
             }
         })
     }
@@ -311,61 +197,101 @@ struct SzenarioPlanerView: View {
         })
     }
 
-    private func bindingForPruefungNote(id: UUID) -> Binding<Double> {
+    private func bindingForPruefungNote(id: UUID) -> Binding<String> {
         Binding(get: {
-            szenario.pruefungen.first(where: { $0.id == id })?.note ?? 0.0
+            szenario.pruefungen.first(where: { $0.id == id })?.note ?? ""
         }, set: { newValue in
             if let index = szenario.pruefungen.firstIndex(where: { $0.id == id }) {
-                szenario.pruefungen[index].note = max(0, min(newValue, 15))
+                let filtered = newValue.filter { "0123456789.".contains($0) }
+                szenario.pruefungen[index].note = filtered
                 berechneEndnote()
-                saveChanges()
             }
         })
     }
 
-    // ----------------------------
-    // Aktionen (verwenden nun nur noch Szenario-Persistenz)
-    // ----------------------------
-    private func addSemester() {
-        let newSemester = SzenarioSemester(id: UUID(), name: "Neues Semester", note: 0.0, punkte: 0.0)
-        szenario.semester.append(newSemester)
-        berechneEndnote()
+    // MARK: - Endnote
+    @discardableResult
+    private func berechneEndnote() -> Double {
+        let semesterValues = szenario.semester.compactMap { Double($0.note) }
+        let pruefungsValues = szenario.pruefungen.compactMap { Double($0.note) }
+        let allValues = semesterValues + pruefungsValues
+
+        endNote = allValues.isEmpty ? 0.0 : allValues.reduce(0, +) / Double(allValues.count)
+        szenario.endNote = endNote
         saveChanges()
-        focusedField = newSemester.id
+        return endNote
     }
 
-    private func addPruefung() {
-        let newFach = SzenarioPruefung(id: UUID(), name: "Neue Prüfung", note: 0.0)
-        szenario.pruefungen.append(newFach)
-        berechneEndnote()
-        saveChanges()
-        focusedField = newFach.id
-    }
-
-    private func deleteSemester(at offsets: IndexSet) {
-        szenario.semester.remove(atOffsets: offsets)
-        berechneEndnote()
-        saveChanges()
-    }
-
-    private func deletePruefung(at offsets: IndexSet) {
-        szenario.pruefungen.remove(atOffsets: offsets)
-        berechneEndnote()
-        saveChanges()
-    }
-
-    private func berechneEndnote() {
-        let semesterSum = szenario.semester.reduce(0.0) { $0 + $1.note }
-        let pruefungsSum = szenario.pruefungen.reduce(0.0) { $0 + $1.note }
-        let count = Double(szenario.semester.count + szenario.pruefungen.count)
-        withAnimation {
-            endNote = count > 0 ? (semesterSum + pruefungsSum) / count : 0.0
+    // MARK: - Persistenz (UserDefaults)
+    private func saveChanges() {
+        szenario.endNote = endNote
+        let encoder = JSONEncoder()
+        if let data = try? encoder.encode(szenario) {
+            UserDefaults.standard.set(data, forKey: storageKey)
         }
     }
 
-    /// Speichert nur das Szenario (Datei + Backup in UserDefaults)
-    private func saveChanges() {
-        szenario.endNote = endNote
-        saveScenarioToStorage()
+    private func loadScenarioFromStorage() -> Bool {
+        guard let data = UserDefaults.standard.data(forKey: storageKey) else { return false }
+        let decoder = JSONDecoder()
+        if let stored = try? decoder.decode(AbiturSzenario.self, from: data) {
+            self.szenario = stored
+            self.endNote = stored.endNote
+            return true
+        }
+        return false
     }
+
+    private func initializeScenarioFromUserStoreAndSave() {
+        szenario.semester = userStore.semesterArray.map {
+            SzenarioSemester(
+                id: $0.id,
+                name: $0.name,
+                note: String(format: "%.1f", $0.semesterNote),
+                punkte: $0.semesterPunkte
+            )
+        }
+
+        szenario.pruefungen = zip(userStore.pruefungsNamenArray,
+                                   userStore.pruefungsNotenArray.compactMap { Double($0) })
+            .map { SzenarioPruefung(id: UUID(), name: $0.0, note: String(format: "%.0f", $0.1)) }
+
+        endNote = userStore.endNoteAbi != 0 ? userStore.endNoteAbi : berechneEndnote()
+        szenario.endNote = endNote
+        saveChanges()
+    }
+
+    private func resetSzenario() {
+        // Semester aus UserStore übernehmen
+        szenario.semester = userStore.semesterArray.map {
+            SzenarioSemester(
+                id: $0.id,
+                name: $0.name,
+                note: String(format: "%.1f", $0.semesterNote),
+                punkte: $0.semesterPunkte
+            )
+        }
+
+        // Prüfungen aus UserStore übernehmen
+        szenario.pruefungen = userStore.aktuellerAbiNotenArray.map {
+            SzenarioPruefung(
+                id: UUID(),
+                name: $0.name,
+                note: String(format: "%.0f", Double($0.note) ?? 0)
+            )
+        }
+
+
+        // Endnote sauber berechnen oder aus UserStore übernehmen
+        if userStore.endNoteAbi != 0 {
+            endNote = userStore.endNoteAbi
+        } else {
+            endNote = berechneEndnote()
+        }
+        szenario.endNote = endNote
+
+        saveChanges()
+        focusedField = nil
+    }
+
 }
