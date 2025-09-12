@@ -18,6 +18,8 @@ struct PremiumView: View {
     var body: some View {
         ZStack {
             Color.modeColor.edgesIgnoringSafeArea(.all)
+            
+            
 
             ScrollView {
                 VStack(spacing: 30) {
@@ -117,19 +119,21 @@ struct PremiumView: View {
 
                     // Restore & Policy unverändert
 
+                    if(!user.userHasGoldPremium) {
+                        // Restore & Policy
+                        VStack(spacing: 10) {
+                            Text("Kauf wiederherstellen")
+                                .underline()
+                                .foregroundColor(.blue)
+                                .onTapGesture { restorePurchases() }
 
-                    // Restore & Policy
-                    VStack(spacing: 10) {
-                        Text("Kauf wiederherstellen")
-                            .underline()
-                            .foregroundColor(.blue)
-                            .onTapGesture { restorePurchases() }
-
-                        Link("Privacy Policy & Terms of Use",
-                             destination: URL(string: "https://415414.8b.io/privacyAndTerms.html")!)
-                            .foregroundColor(.blue)
+                            Link("Privacy Policy & Terms of Use",
+                                 destination: URL(string: "https://415414.8b.io/privacyAndTerms.html")!)
+                                .foregroundColor(.blue)
+                        }
+                        .padding(.vertical, 20)
                     }
-                    .padding(.vertical, 20)
+                    
                 }
             }
         }
@@ -233,9 +237,6 @@ struct GoldPremiumView: View {
     @Binding var selectedColor:Color
     var body: some View {
         VStack {
-            Text("Premium-Bereich").font(.title).bold().padding(.top, 10)
-            // swiftlint:disable:next line_length
-            Text("Danke für deine Spende. Wähle jetzt deine individuelle App-Farbe und dein persönliches App Icon aus!").padding(.top).padding(.horizontal, 25).multilineTextAlignment(.center)
 
             Text("Farbe auswählen").font(.headline).padding(.top).foregroundColor(.modeColorSwitch).padding(.bottom, 10)
 

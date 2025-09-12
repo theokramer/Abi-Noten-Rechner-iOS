@@ -39,7 +39,7 @@ struct AbiClicked: View {
                         .foregroundColor(.modeColorSwitch)
                     ) {
                         ForEach(user.aktuellerAbiNotenArray.indices, id: \.self) { index in
-                            FachRow(fach: $user.aktuellerAbiNotenArray[index])
+                            AbiFachRow(fach: $user.aktuellerAbiNotenArray[index])
                                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                     Button(role: .destructive) {
                                         user.aktuellerAbiNotenArray.remove(at: index)
@@ -223,69 +223,12 @@ struct AbiClicked: View {
     }
     
     private func shareText(note: Double) -> String {
-        return "Hi, ich habe gerade meine Endnote mit dem Abi Noten Rechner ausgerechnet. Ich habe eine Durchnittsnote von \(String(format: "%.2f", note)). Schau deine eigenen Noten nach: https://apps.apple.com/de/app/abi-noten-rechener/id1477488886"
-    }
-}
-
-struct FaecherList: View {
-    @Binding var faecher: [AbiItem]
-    var updateEndnote: () -> Void
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            ScrollView {
-                LazyVStack(spacing: 8) {
-                    ForEach(faecher.indices, id: \.self) { index in
-                        FachRow(fach: $faecher[index])
-                            .onChange(of: faecher[index].note) { _ in updateEndnote() }
-                            .onChange(of: faecher[index].name) { _ in updateEndnote() }
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button(role: .destructive) {
-                                    deleteFach(at: index)
-                                } label: {
-                                    Label("Löschen", systemImage: "trash")
-                                }
-                            }
-                    }
-                    
-                    // + Button
-                    Button {
-                        addFach()
-                    } label: {
-                        HStack {
-                            Spacer()
-                            Image(systemName: "plus.circle")
-                                .font(.title2)
-                            Text("Fach hinzufügen")
-                                .fontWeight(.semibold)
-                            Spacer()
-                        }
-                        .padding(10)
-                        .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemGray6)))
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.vertical, 4)
-                }
-                .padding(.horizontal)
-            }
-            .frame(maxHeight: 400) // oder dynamisch
-            .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemGray6).opacity(0.2)))
-        }
-    }
-    
-    private func deleteFach(at index: Int) {
-        faecher.remove(at: index)
-        updateEndnote()
-    }
-    
-    private func addFach() {
-        faecher.append(AbiItem(id: UUID(), name: "", note: ""))
-        updateEndnote()
+        return "Hi, ich habe gerade meine Endnote mit dem Abi Noten Rechner ausgerechnet. Ich habe eine Durchnittsnote von \(String(format: "%.2f", note)). Schau deine eigenen Noten nach: https://apps.apple.com/de/app/abi-noten-rechner/id1550466460"
     }
 }
 
 
-struct FachRow: View {
+struct AbiFachRow: View {
     @Binding var fach: AbiItem
     
     var body: some View {
@@ -319,26 +262,6 @@ struct FachRow: View {
         .padding(4)
     }
 }
-
-struct AddFachButton: View {
-    @Binding var faecher: [AbiItem]
-    
-    var body: some View {
-        HStack {
-            Spacer()
-            Button {
-                faecher.append(AbiItem(id: UUID(), name: "", note: ""))
-            } label: {
-                Image(systemName: "plus.circle")
-                    .font(.title2)
-                    .foregroundColor(.modeColor)
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.trailing)
-    }
-}
-
 
 // MARK: - Subview
 struct SemesterCard: View {

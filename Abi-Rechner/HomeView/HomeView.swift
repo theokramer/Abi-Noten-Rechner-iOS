@@ -38,7 +38,7 @@ struct HomeView: View {
                         .font(.title3).bold()
                         .foregroundColor(.modeColorSwitch)
                     ) {
-                        ForEach(user.semesterArray.sorted { $0.date < $1.date }) { item in
+                        ForEach(user.semesterArray.sorted { $0.name < $1.name }) { item in
                             NavigationLink(
                                 destination: SemesterNoteAusrechnen(semesterToEdit: item)
                                     .environmentObject(user),
@@ -102,7 +102,7 @@ struct HomeView: View {
         let text = """
         Hi, ich habe gerade das \(item.name) mit dem Abi Noten Rechner ausgerechnet. 
         Ich habe einen Notenschnitt von \(String(format: "%.2f", item.semesterNote)). 
-        Wenn du auch deine Noten ausrechnen möchtest, kannst du dir den Abi Noten Rechner kostenlos im App Store herunterladen: https://apps.apple.com/us/app/abi-noten-rechner/id1550466460
+        Wenn du auch deine Noten ausrechnen möchtest, kannst du dir den Abi Noten Rechner kostenlos im App Store herunterladen: https://apps.apple.com/de/app/abi-noten-rechner/id1550466460
         """
         
         let av = UIActivityViewController(activityItems: [text], applicationActivities: nil)
@@ -206,7 +206,7 @@ struct NewSemesterButton: View {
         NavigationLink(destination: SemesterNoteAusrechnen().environmentObject(user),
                        isActive: $navigateToSemester) {
             Button {
-                if user.userHasBasicPremium { resetForNewSemester()
+                if user.userHasBasicPremium || user.userHasGoldPremium { resetForNewSemester()
                     navigateToSemester = true} else {
                         user.spendenClicked = true
                     }
@@ -214,7 +214,7 @@ struct NewSemesterButton: View {
             } label: {
                 FeatureCard(title: "Neues Semester anlegen",
                             icon: "plus.circle.fill",
-                            active: user.userHasBasicPremium,
+                            active: user.userHasBasicPremium || user.userHasGoldPremium,
                             showChevron: false).environmentObject(user)
             }
             .buttonStyle(PlainButtonStyle())
