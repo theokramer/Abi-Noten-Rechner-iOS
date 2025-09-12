@@ -88,7 +88,7 @@ struct StartView: View {
                     }
                     
                     }.sheet(isPresented: $user.spendenClicked, content: {
-                        SpendenView().environmentObject(UserStore()).onDisappear {
+                        PremiumView().environmentObject(UserStore()).onDisappear {
                             user.userHasBasicPremium = user.basicPremium || Products.store.isProductPurchased(Products.basicSub) ? true : false
                             user.userHasGoldPremium = user.premium || Products.store.isProductPurchased(Products.permanent) ||
                             Products.store.isProductPurchased(Products.goldSub) ? true : false
