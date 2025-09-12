@@ -304,7 +304,6 @@ struct NewSemesterButton: View {
     @State private var navigateToSemester = false
 
     private func resetForNewSemester() {
-        user.ausrechnen = true
         user.updateMode = false
         user.aktuellerFaecherArray = []
         user.aktuellerNotenName = ""
@@ -312,22 +311,22 @@ struct NewSemesterButton: View {
     }
 
     var body: some View {
-        if user.userHasGoldPremium {
-            NavigationLink(destination: SemesterNoteAusrechnen().environmentObject(user), isActive: $navigateToSemester) {
-                FeatureCard(title: "Neues Semester anlegen", icon: "plus.circle.fill", active: true, showChevron: false)
-                    .onTapGesture {
-                        resetForNewSemester()
-                        navigateToSemester = true
-                    }
+        NavigationLink(destination: SemesterNoteAusrechnen().environmentObject(user),
+                       isActive: $navigateToSemester) {
+            Button {
+                resetForNewSemester()
+                navigateToSemester = true
+            } label: {
+                FeatureCard(title: "Neues Semester anlegen",
+                            icon: "plus.circle.fill",
+                            active: user.userHasGoldPremium,
+                            showChevron: false)
             }
             .buttonStyle(PlainButtonStyle())
-        } else {
-            Button(action: { user.spendenClicked = true }) {
-                FeatureCard(title: "Neues Semester anlegen", icon: "plus.circle.fill", active: false, showChevron: false)
-            }
         }
     }
 }
+
 
 
 
@@ -399,10 +398,8 @@ struct EditSemesterButton: View {
 
 struct EmptySemesterCard: View {
     @ObservedObject var user: UserStore
-    @State private var navigateToSemester = false
 
     private func resetForNewSemester() {
-        user.ausrechnen = true
         user.updateMode = false
         user.aktuellerFaecherArray = []
         user.aktuellerNotenName = ""
@@ -410,16 +407,20 @@ struct EmptySemesterCard: View {
     }
 
     var body: some View {
-        NavigationLink(destination: SemesterNoteAusrechnen().environmentObject(user), isActive: $navigateToSemester) {
-            FeatureCard(title: "Neues Semester anlegen", icon: "plus.circle.fill", active: true)
-                .onTapGesture {
-                    resetForNewSemester()
-                    navigateToSemester = true
-                }
+        NavigationLink(destination: SemesterNoteAusrechnen().environmentObject(user)
+                       ) {
+            Button {
+                resetForNewSemester()
+            } label: {
+                FeatureCard(title: "Neues Semester anlegen",
+                            icon: "plus.circle.fill",
+                            active: true)
+            }
+            .buttonStyle(PlainButtonStyle())
         }
-        .buttonStyle(PlainButtonStyle())
     }
 }
+
 
 
 

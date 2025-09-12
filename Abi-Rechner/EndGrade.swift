@@ -13,7 +13,6 @@ struct AbiClicked: View {
     @EnvironmentObject var user: UserStore
     @Environment(\.managedObjectContext) private var viewContext
     
-    @State private var selectedSemesters: [UUID] = []
     @State private var endPunkteSchnitt: Double = -1
     @State private var shareNote: SemesternotenItem = SemesternotenItem(id: UUID(), name: "", semesterNote: -1, semesterPunkte: 0.0, date: Date())
     @State private var shareEndnote = false
@@ -27,7 +26,7 @@ struct AbiClicked: View {
                         .foregroundColor(.modeColorSwitch)
                     ) {
                         ForEach(user.semesterArray) { item in
-                            SemesterCard(item: item, isSelected: selectedSemesters.contains(item.id)) {
+                            SemesterCard(item: item, isSelected: user.selectedSemesterIDs.contains(item.id)) {
                                 toggleSemester(item: item)
                                 updateEndnote()
                             }
@@ -74,7 +73,7 @@ struct AbiClicked: View {
                                 .font(.headline)
                                 .foregroundColor(.modeColorSwitch)
                             
-                            if selectedSemesters.count == 4 {
+                            if user.selectedSemesterIDs.count >= 1 {
                                 VStack(spacing: 8) {
                                     HStack {
                                         Text("Endpunkte")
@@ -107,17 +106,19 @@ struct AbiClicked: View {
                                     .italic()
                             }
                             
-                            // Teilen Button
-                            Button(action: shareCurrentNote) {
-                                HStack {
-                                    Image(systemName: "square.and.arrow.up")
-                                    Text("Endnote teilen")
-                                        .bold()
+                            if user.selectedSemesterIDs.count >= 1 {
+                                // Teilen Button
+                                Button(action: shareCurrentNote) {
+                                    HStack {
+                                        Image(systemName: "square.and.arrow.up")
+                                        Text("Endnote teilen")
+                                            .bold()
+                                    }
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity, minHeight: 50)
+                                    .background(RoundedRectangle(cornerRadius: 16).fill(Color.mainColor))
+                                    .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
                                 }
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity, minHeight: 50)
-                                .background(RoundedRectangle(cornerRadius: 16).fill(Color.mainColor))
-                                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
                             }
                         }
                         .padding(.vertical, 8)
@@ -126,56 +127,71 @@ struct AbiClicked: View {
                 .listStyle(.insetGrouped)
                 
                 .onAppear {
+                    if user.selectedSemesterIDs.isEmpty, !user.semesterArray.isEmpty {
+                        // Erststart → default auf 4 Semester setzen
+                        user.selectedSemesterIDs = Array(user.semesterArray.prefix(4).map { $0.id })
+                    }
                     updateEndnote()
+                }.sheet(isPresented: $showShareSheet) {
+                    ShareSheet(items: [shareText(note: user.endNoteAbi)])
                 }
+
+
+
+
+
             }
-    
+
+
+    struct ShareSheet: UIViewControllerRepresentable {
+        var items: [Any]
+        
+        func makeUIViewController(context: Context) -> UIActivityViewController {
+            UIActivityViewController(activityItems: items, applicationActivities: nil)
+        }
+        
+        func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+    }
+
     // MARK: - Funktionen
     private func toggleSemester(item: SemesternotenItem) {
-        if let index = selectedSemesters.firstIndex(of: item.id) {
-            selectedSemesters.remove(at: index)
-        } else if selectedSemesters.count < 4 {
-            selectedSemesters.append(item.id)
+        if let index = user.selectedSemesterIDs.firstIndex(of: item.id) {
+            user.selectedSemesterIDs.remove(at: index)
+        } else if user.selectedSemesterIDs.count < 4 {
+            user.selectedSemesterIDs.append(item.id)
         }
     }
+
+
     
     private func calcEndNoteValue() -> Double? {
-        guard selectedSemesters.count == 4,
-              !user.aktuellerAbiNotenArray.filter({ !$0.note.isEmpty }).isEmpty else {
-            return nil
-        }
+        guard !user.selectedSemesterIDs.isEmpty else { return nil }
 
-        // Durchschnitt Semester
         let semesterPunkte = user.semesterArray
-            .filter { selectedSemesters.contains($0.id) }
+            .filter { user.selectedSemesterIDs.contains($0.id) }
             .map { $0.semesterPunkte }
         let semesterAverage = semesterPunkte.reduce(0, +) / Double(semesterPunkte.count)
 
-        // Durchschnitt Abi-Prüfungen
-        let abiPunkte = user.aktuellerAbiNotenArray
-            .compactMap { Double($0.note) }
+        let abiPunkte = user.aktuellerAbiNotenArray.compactMap { Double($0.note) }
         let abiAverage = abiPunkte.isEmpty ? 0 : abiPunkte.reduce(0, +) / Double(abiPunkte.count)
 
-        // Endpunkte nach Gewichtung: Semester 2/3, Abi 1/3
         return semesterAverage * (2.0/3.0) + abiAverage * (1.0/3.0)
     }
-    
+
     private func calcEndpunkte() -> Double? {
-        guard selectedSemesters.count == 4
-               else {
-            return nil
-        }
+        guard !user.selectedSemesterIDs.isEmpty else { return nil }
 
         let semesterPunkte = user.semesterArray
-            .filter { selectedSemesters.contains($0.id) }
+            .filter { user.selectedSemesterIDs.contains($0.id) }
             .map { $0.semesterPunkte }
         let semesterAverage = semesterPunkte.reduce(0, +) / Double(semesterPunkte.count)
-        let abiPunkte = user.aktuellerAbiNotenArray.compactMap { Double($0.note) }.isEmpty ? semesterPunkte : user.aktuellerAbiNotenArray.compactMap { Double($0.note) }
-        let abiAverage = abiPunkte.reduce(0, +) / Double(abiPunkte.count)
 
-        // Gewichtung: Semester 2/3, Abi 1/3
+        let abiPunkte = user.aktuellerAbiNotenArray.compactMap { Double($0.note) }
+        let abiAverage = abiPunkte.isEmpty ? 0 : abiPunkte.reduce(0, +) / Double(abiPunkte.count)
+
         return semesterAverage * (2.0/3.0) + abiAverage * (1.0/3.0)
     }
+
 
     private func punkteZuNote(punkte: Double) -> Double {
         // 15 Punkte = 1, 0 Punkte = 6 (lineare Skalierung)
@@ -205,8 +221,8 @@ struct AbiClicked: View {
         showShareSheet = true
     }
     
-    private func shareText() -> String {
-        return "Hi, ich habe gerade \(shareEndnote ? "meine Endnote" : "eine Semesternote") mit dem Abi Noten Rechner ausgerechnet. Mein Notenschnitt ist \(String(format: "%.2f", shareNote.semesterNote))!"
+    private func shareText(note: Double) -> String {
+        return "Hi, ich habe gerade meine Endnote mit dem Abi Noten Rechner ausgerechnet. Ich habe eine Durchnittsnote von \(String(format: "%.2f", note)). Schau deine eigenen Noten nach: https://apps.apple.com/de/app/abi-noten-rechener/id1477488886"
     }
 }
 

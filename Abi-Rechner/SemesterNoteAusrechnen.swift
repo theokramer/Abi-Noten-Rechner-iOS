@@ -8,9 +8,27 @@
 import SwiftUI
 import CoreData
 import WidgetKit
+import Combine
+
+class KeyboardObserver: ObservableObject {
+    @Published var isKeyboardVisible: Bool = false
+    private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
+            .sink { [weak self] _ in self?.isKeyboardVisible = true }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)
+            .sink { [weak self] _ in self?.isKeyboardVisible = false }
+            .store(in: &cancellables)
+    }
+}
 
 @available(iOS 15.0, *)
 struct SemesterNoteAusrechnen: View {
+    @StateObject private var keyboard = KeyboardObserver()
+
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var user: UserStore
     @Environment(\.managedObjectContext) private var viewContext
@@ -221,19 +239,24 @@ struct SemesterNoteAusrechnen: View {
                 // 2. Fächerliste
                 FaecherList(faecher: $user.aktuellerFaecherArray).frame(maxHeight: 400) // max Höhe, damit Buttons sichtbar bleiben
                 
+                Spacer()
+                
                 // 3. + Fach hinzufügen
                 AddFachButton(faecher: $user.aktuellerFaecherArray)
                 
                 // 4. Buttons
-                ActionButtons(
-                    showDeleteAlert: $showDeleteAlert,
-                    errorCalc: $errorCalc,
-                    warnUser: warnUser,
-                    clearAll: clearAll,
-                    checkIfTrue: checkIfTrue,
-                    dismiss: { dismiss() },
-                    updateMode: user.updateMode
-                )
+                if !keyboard.isKeyboardVisible {
+                    ActionButtons(
+                        showDeleteAlert: $showDeleteAlert,
+                        errorCalc: $errorCalc,
+                        warnUser: warnUser,
+                        clearAll: clearAll,
+                        checkIfTrue: checkIfTrue,
+                        dismiss: { dismiss() },
+                        updateMode: user.updateMode
+                    )
+                }
+
                 
                 Spacer()
                 
@@ -245,7 +268,7 @@ struct SemesterNoteAusrechnen: View {
                 }
             }
             .padding(.horizontal)
-            .padding(.top, 20)
+            .padding(.top, 10)
         }
         .onAppear { initialize() }
         .onChange(of: scenePhase) { newPhase in
@@ -410,7 +433,7 @@ struct FachItem: Identifiable, Codable {
     var position: Int64
 }
 
-struct AbiItem: Identifiable {
+struct AbiItem: Identifiable, Codable, Equatable {
     var id: UUID
     var name: String
     var note: String

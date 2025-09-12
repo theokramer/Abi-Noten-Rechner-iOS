@@ -29,7 +29,7 @@ extension Date {
 
 
 
-struct SemesternotenItem: Identifiable, Hashable, Equatable {
+struct SemesternotenItem: Identifiable, Hashable, Equatable, Decodable, Encodable {
     var id: UUID
     var name: String
     var semesterNote: Double

@@ -125,10 +125,62 @@ class UserStore: ObservableObject {
     }
     //fetchMap()
     @Published var aktuellerFaecherArray:[FachItem] = fetchMap()
-    @Published var semesterArray: [SemesternotenItem] = []
+    @Published var semesterArray: [SemesternotenItem] = {
+        if let data = defaults.data(forKey: "semesterArray_v1") {
+            do {
+                return try JSONDecoder().decode([SemesternotenItem].self, from: data)
+            } catch {
+                print("⚠️ Fehler beim Laden semesterArray:", error)
+            }
+        }
+        return []
+    }() {
+        didSet {
+            do {
+                let data = try JSONEncoder().encode(semesterArray)
+                defaults.set(data, forKey: "semesterArray_v1")
+            } catch {
+                print("⚠️ Fehler beim Speichern semesterArray:", error)
+            }
+        }
+    }
 
     
-    @Published var aktuellerAbiNotenArray = fetchMapAbi()
+    
+    @Published var aktuellerAbiNotenArray: [AbiItem] = {
+        if let data = defaults.data(forKey: "aktuellerAbiNotenArray_v1") {
+            do {
+                return try JSONDecoder().decode([AbiItem].self, from: data)
+            } catch {
+                print("⚠️ Fehler beim Laden aktuellerAbiNotenArray:", error)
+            }
+        }
+        return []
+    }() {
+        didSet {
+            do {
+                let data = try JSONEncoder().encode(aktuellerAbiNotenArray)
+                defaults.set(data, forKey: "aktuellerAbiNotenArray_v1")
+            } catch {
+                print("⚠️ Fehler beim Speichern aktuellerAbiNotenArray:", error)
+            }
+        }
+    }
+    
+    @Published var selectedSemesterIDs: [UUID] = {
+        if let saved = defaults.array(forKey: "selectedSemesterIDs_v1") as? [String] {
+            return saved.compactMap { UUID(uuidString: $0) }
+        }
+        return []
+    }() {
+        didSet {
+            let ids = selectedSemesterIDs.map { $0.uuidString }
+            defaults.set(ids, forKey: "selectedSemesterIDs_v1")
+        }
+    }
+
+
+
     @Published var aktuellerNotenName = defaults.string(forKey: "aktuellerNotenName") ?? "" {
         didSet {
             defaults.set(aktuellerNotenName, forKey: "aktuellerNotenName")
