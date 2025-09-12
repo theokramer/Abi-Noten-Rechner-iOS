@@ -9,50 +9,14 @@ import SwiftUI
 import Combine
 import StoreKit
 
-
-class ColorStore: ObservableObject {
-    @Published var mainColor: Color
-
-    init() {
-        if let uiColor = UserDefaults.standard.colorForKey("selectedColor") {
-            self.mainColor = Color(uiColor)
-        } else {
-            self.mainColor = .orange
-        }
-    }
-
-    func setColor(_ color: Color) {
-        self.mainColor = color
-        // Direkt speichern, kein optional nötig
-        let uiColor = UIColor(color)
-        UserDefaults.standard.setColor(uiColor, forKey: "selectedColor")
-    }
-}
-
-
-
 class UserStore: ObservableObject {
-    @Published var ausrechnen: Bool = false
-    @Published var schnitt: Bool = false
-    @Published var verlauf: Bool = false
-    
-    @Published var abiClicked: Bool = false
     @Published var spendenClicked: Bool = false
-    @Published var letztesSemester = false
-    @Published var itemClicked = false
     @Published var updateMode = true
-    @Published var reviewed = false
     @Published var aktuelleID = ""
-    @Published var siteOpened = 0
-    @Published var updateVerlauf = false
     @Published var semesterNoten = [SemesternotenItem]()
-    @Published var showAd = false
     @Published var products = [SKProduct]()
     @Published var components = DateComponents()
     @Published var differenceBetweenDates = updateDifferenceBetweenDates()
-    @Published var supportClicked = false
-    @Published var noteTeilenClicked: Bool = false
-    @Published var sendEmail = false
     @Published var interstitialCount: Int = defaults.integer(forKey: "interstitialCount") {
         didSet { defaults.set(interstitialCount, forKey: "interstitialCount") }
     }
@@ -105,12 +69,6 @@ class UserStore: ObservableObject {
         }
     }
     
-    @Published var blackText: Bool = defaults.bool(forKey: "blackText") {
-        didSet {
-            defaults.set(blackText, forKey: "blackText")
-        }
-    }
-    
     @Published var endNoteAbi: Double = defaults.double(forKey: "endNoteAbi") {
         didSet {
             defaults.set(endNoteAbi, forKey: "endNoteAbi")
@@ -132,23 +90,9 @@ class UserStore: ObservableObject {
             defaults.set(pruefungsNotenArray, forKey: "pruefungsNotenArray")
         }
     }
+
     
-    @Published var aktuellePunkte: Double = defaults.double(forKey: "aktuellePunkte") {
-        didSet {
-            defaults.set(aktuellePunkte, forKey: "aktuellePunkte")
-        }
-    }
-    @Published var aktuelleNote: Double = defaults.double(forKey: "aktuelleNote") {
-        didSet {
-            defaults.set(aktuelleNote, forKey: "aktuelleNote")
-        }
-    }
-    @Published var aktuellerName = defaults.string(forKey: "aktuellerName") {
-        didSet {
-            defaults.set(aktuellerName, forKey: "aktuellerName")
-        }
-    }
-    //fetchMap()
+
     @Published var aktuellerFaecherArray:[FachItem] = fetchMap()
     @Published var semesterArray: [SemesternotenItem] = {
         if let data = defaults.data(forKey: "semesterArray_v1") {
@@ -217,35 +161,9 @@ class UserStore: ObservableObject {
            objectWillChange.send()
        }
     
-    @Published var verlaufPunkte = 0.0
-    @Published var verlaufNote = 0.0
-    @Published var verlaufName = ""
-    @Published var verlaufFaecherArray = fetchMap()
-    @Published var verlaufNotenName = ""
-    
-    
-    @Published var reviewCount: Int = defaults.integer(forKey: "reviewCount") {
-        didSet {
-            defaults.set(reviewCount, forKey: "reviewCount")
-        }
-    }
-    @Published var nachSpeichernFragenStopp: Bool = defaults.bool(forKey: "nachSpeichernFragenStopp") {
-        didSet {
-            defaults.set(nachSpeichernFragenStopp, forKey: "nachSpeichernFragenStopp")
-        }
-    }
-    @Published var frageNachSpeichern = false
-    
 }
 let defaults = UserDefaults.standard
 let  tablet = screen.width > 430 ? true : false
- 
-extension Color {
-    static let modeColor = Color("modeColor")
-    static let modeColorSwitch = Color("modeColorSwitch")
-    static let mainColor2 = Color("Orange")
-    static var saleColor = Color("Orange")
-}
 
 func sheduleNotificationHalbjahr() {
     let content = UNMutableNotificationContent()
@@ -275,138 +193,6 @@ func sheduleNotificationHalbjahr() {
     }
 }
 
-func sheduleNotificationGeneral() {
-    let content = UNMutableNotificationContent()
-    content.title = "Semester-Note ausrechnen"
-    content.body = "Denk daran, deine Semesternote auszurechnen!"
-    
-    var dateComponents = DateComponents()
-    dateComponents.calendar = Calendar.current
-    dateComponents.weekOfMonth = 1
-    dateComponents.weekday = 1
-    dateComponents.hour = 17
-    dateComponents.minute = 30
-    
-    let trigger = UNCalendarNotificationTrigger(
-             dateMatching: dateComponents, repeats: true)
-    
-    let uuidString = UUID().uuidString
-    let request = UNNotificationRequest(identifier: uuidString,
-                content: content, trigger: trigger)
-
-    // Schedule the request with the system.
-    let notificationCenter = UNUserNotificationCenter.current()
-    notificationCenter.add(request) { (error) in
-       if error != nil {
-          // Handle any errors.
-       }
-    }
-}
-
-func sheduleNotificationSaleEnding() {
-    let content = UNMutableNotificationContent()
-    content.title = "Bis zu 40% Winter-Sale"
-    content.body = "Der Winter-Sale endet bald. Hol dir jetzt noch die Premiumversion des Abi Noten Rechners für bis zu 40% reduziert."
-    
-    var dateComponents = DateComponents()
-    dateComponents.calendar = Calendar.current
-    dateComponents.year = 2022
-    dateComponents.month = 1
-    dateComponents.day = 20
-    dateComponents.hour = 17
-    dateComponents.minute = 00
-    
-    let trigger = UNCalendarNotificationTrigger(
-             dateMatching: dateComponents, repeats: true)
-    
-    let uuidString = UUID().uuidString
-    let request = UNNotificationRequest(identifier: uuidString,
-                content: content, trigger: trigger)
-
-    // Schedule the request with the system.
-    let notificationCenter = UNUserNotificationCenter.current()
-    notificationCenter.add(request) { (error) in
-       if error != nil {
-          // Handle any errors.
-       }
-    }
-}
-
-func sheduleNotificationEndeDesJahres() {
-    let content = UNMutableNotificationContent()
-    content.title = "Semester-Note ausrechnen"
-    content.body = "Es sieht so aus, als neige sich das Schuljahr dem Ende zu. Denk daran, deine Semesternote auszurechnen."
-    
-    var dateComponents = DateComponents()
-    dateComponents.calendar = Calendar.current
-    dateComponents.month = 7
-    dateComponents.day = 30
-    dateComponents.hour = 13
-    dateComponents.minute = 30
-    
-    let trigger = UNCalendarNotificationTrigger(
-             dateMatching: dateComponents, repeats: true)
-    
-    let uuidString = UUID().uuidString
-    let request = UNNotificationRequest(identifier: uuidString,
-                content: content, trigger: trigger)
-
-    // Schedule the request with the system.
-    let notificationCenter = UNUserNotificationCenter.current()
-    notificationCenter.add(request) { (error) in
-       if error != nil {
-          // Handle any errors.
-       }
-    }
-}
-
-func checkIfSaleIsActive() -> Bool {
-    
-/*
- let formatter = DateFormatter()
- formatter.dateFormat = "dd/MM/yyyy"
- let firstDate = formatter.date(from: "20/01/2022")
- let secondDate = Date()
-
- if firstDate?.compare(secondDate) == .orderedDescending {
-     return true
- }
- return false
- */
-    
-    return true
-    
-}
-
-extension UserDefaults {
-  func colorForKey(key: String) -> UIColor? {
-    var colorReturnded: UIColor?
-    if let colorData = data(forKey: key) {
-      do {
-        if let color = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(colorData) as? UIColor {
-          colorReturnded = color
-        }
-      } catch {
-        print("Error UserDefaults")
-      }
-    }
-    return colorReturnded
-  }
-  
-  func setColor(color: UIColor?, forKey key: String) {
-    var colorData: NSData?
-    if let color = color {
-      do {
-        let data = try NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: false) as NSData?
-        colorData = data
-      } catch {
-        print("Error UserDefaults")
-      }
-    }
-    set(colorData, forKey: key)
-  }
-}
-
 extension UIApplication {
     func hideKeyboard() {
         sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
@@ -416,72 +202,3 @@ func hideKeyboard() {
     UIApplication.shared.hideKeyboard()
 }
 
-struct HideRowSeparatorModifier: ViewModifier {
-    static let defaultListRowHeight: CGFloat = 44
-    var insets: EdgeInsets
-    var background: Color
-    
-    init(insets: EdgeInsets, background: Color) {
-        self.insets = insets
-        var alpha: CGFloat = 0
-        UIColor(background).getWhite(nil, alpha: &alpha)
-        assert(alpha == 1, "Setting background to a non-opaque color will result in separators remaining visible.")
-        self.background = background
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .padding(insets)
-            .frame(
-                minWidth: 0, maxWidth: .infinity,
-                minHeight: Self.defaultListRowHeight,
-                alignment: .leading
-            )
-            .listRowInsets(EdgeInsets())
-            .background(background)
-    }
-}
-
-extension EdgeInsets {
-    static let defaultListRowInsets = Self(top: 0, leading: 16, bottom: 0, trailing: 16)
-}
-
-extension View {
-    func hideRowSeparator(insets: EdgeInsets = .defaultListRowInsets, background: Color = .white) -> some View {
-        modifier(HideRowSeparatorModifier(insets: insets, background: background))
-    }
-}
-
-let minDragTranslationForSwipe: CGFloat = 10
-func handleSwipe(translation: CGFloat) -> Bool {
-    if translation > minDragTranslationForSwipe {
-        return true
-    } else {
-        return false
-    }
-    
-}
-
-func handleSwipe2(translation: CGFloat) -> Bool {
-    if translation < minDragTranslationForSwipe {
-        return true
-    } else {
-        return false
-    }
-}
-
-extension UserDefaults {
-    func setColor(_ color: UIColor, forKey key: String) {
-        do {
-            let data = try NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: false)
-            self.set(data, forKey: key)
-        } catch {
-            print("Fehler beim Speichern der Farbe: \(error)")
-        }
-    }
-
-    func colorForKey(_ key: String) -> UIColor? {
-        guard let data = self.data(forKey: key) else { return nil }
-        return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIColor
-    }
-}

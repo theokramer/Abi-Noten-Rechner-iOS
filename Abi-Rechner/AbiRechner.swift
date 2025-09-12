@@ -14,7 +14,7 @@ import GoogleMobileAds
 struct AbiRechner: App {
     @StateObject var colorStore = ColorStore()
     let persistenceController = PersistenceController.shared
-    let selectedColor: UIColor = UserDefaults.standard.colorForKey(key: "selectedColor") ?? UIColor(Color("Orange"))
+    let selectedColor: UIColor = UserDefaults.standard.colorForKey("selectedColor") ?? UIColor(Color("Orange"))
 
     @Environment(\.scenePhase) var phase
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -79,9 +79,6 @@ struct AbiRechner: App {
                     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
                         if success {
                             sheduleNotificationHalbjahr()
-                            sheduleNotificationEndeDesJahres()
-                            sheduleNotificationGeneral()
-                            sheduleNotificationSaleEnding()
                         } else if let error = error {
                             print(error.localizedDescription)
                         }

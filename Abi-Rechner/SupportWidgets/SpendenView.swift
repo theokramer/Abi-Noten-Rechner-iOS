@@ -12,8 +12,9 @@ struct PremiumView: View {
     @EnvironmentObject var user: UserStore
     @State private var selectedTier: Int? = nil
     @State private var selectedGoldOption: Int = 0
-    @State private var selectedColor = Color(UserDefaults.standard.colorForKey(key: "selectedColor") ?? UIColor.orange)
+    @State private var selectedColor = Color(UserDefaults.standard.colorForKey("selectedColor") ?? UIColor.orange)
     @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var colorStore: ColorStore
 
     var body: some View {
         ZStack {
@@ -41,7 +42,7 @@ struct PremiumView: View {
                                 // Hinweis, dass Basic bereits gekauft wurde
                                 HStack {
                                     Image(systemName: "checkmark.seal.fill")
-                                        .foregroundColor(.saleColor)
+                                        .foregroundColor(colorStore.mainColor)
                                         .frame(width: 30, height: 30)
                                     Text("Du hast das Basic-Abo bereits abgeschlossen")
                                         .foregroundColor(.gray)
@@ -138,7 +139,7 @@ struct PremiumView: View {
                         Text(tier == 0 ? "BASIC kaufen" : selectedGoldOption == 0 ? "GOLD Jährlich kaufen" : "GOLD Lifetime kaufen")
                             .bold()
                             .frame(maxWidth: .infinity, minHeight: 60)
-                            .background(Color.saleColor)
+                            .background(colorStore.mainColor)
                             .foregroundColor(.white)
                             .cornerRadius(20)
                             .shadow(radius: 5)
@@ -192,6 +193,7 @@ struct PremiumCardView: View {
     var isSelected: Bool
     var colorScheme: ColorScheme
     var onTap: () -> Void
+    @EnvironmentObject var colorStore: ColorStore
     
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -203,7 +205,7 @@ struct PremiumCardView: View {
             ForEach(features, id: \.1) { feature in
                 HStack(spacing: 10) {
                     ZStack {
-                        Ellipse().fill(Color.saleColor).frame(width: 36, height: 36)
+                        Ellipse().fill(colorStore.mainColor).frame(width: 36, height: 36)
                         Image(systemName: feature.0)
                             .foregroundColor(.white)
                             .frame(width: 18, height: 18)
@@ -223,7 +225,7 @@ struct PremiumCardView: View {
             
         }
         .padding()
-        .background(isSelected ? Color.saleColor.opacity(0.3) : Color.gray.opacity(0.15))
+        .background(isSelected ? colorStore.mainColor.opacity(0.3) : Color.gray.opacity(0.15))
         .cornerRadius(20)
         .shadow(radius: isSelected ? 10 : 3)
         .onTapGesture { onTap() }
@@ -238,7 +240,7 @@ struct BuyButtonRectangle: View {
         ZStack {
             Color.black
             RoundedRectangle(cornerRadius: 20).stroke(Color.white)
-        }.frame(width: checkIfSaleIsActive() ? screen.width * 0.97 : screen.width * 0.9, height: 60).cornerRadius(20)
+        }.frame(width: screen.width * 0.97, height: 60).cornerRadius(20)
     }
 }
 

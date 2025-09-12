@@ -13,15 +13,21 @@ struct HomeView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @StateObject private var viewModel = HomeViewModel()
     @EnvironmentObject var colorStore: ColorStore
-    @State var showSzenarioPlanner: Bool = false
-    
     @State private var selectedSemester: SemesternotenItem? = nil
-    @State private var semesterToDelete: SemesternotenItem? = nil
+
+    var body: some View {
+        Group {
+            NavigationView {
+                content
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
+        }
+    }
 
     
-    var body: some View {
+    private var content: some View {
         
-        NavigationView {
+        
             ZStack {
             List {
                 // MARK: - Aktuelles Semester Section
@@ -130,7 +136,7 @@ struct HomeView: View {
                 }
         }
         
-    }
+    
     }
     private func shareNote(item: SemesternotenItem) {
         let text = """

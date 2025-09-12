@@ -97,6 +97,7 @@ struct SzenarioPlanerView: View {
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Szenario Planung")
+            
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Zurücksetzen", role: .destructive) {
@@ -113,7 +114,7 @@ struct SzenarioPlanerView: View {
                     initializeScenarioFromUserStoreAndSave()
                 }
             }
-        }
+        }.navigationViewStyle(StackNavigationViewStyle())
     }
 
     // MARK: - UI Row

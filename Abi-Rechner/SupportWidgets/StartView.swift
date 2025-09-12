@@ -11,40 +11,39 @@ import UserNotifications
 import GoogleMobileAds
 import CoreData
 
+// StartView.swift
 struct StartView: View {
     @EnvironmentObject var user: UserStore
     @Environment(\.managedObjectContext) private var viewContext
     @Binding var activeScene: Int
     
-    @State private var interstitial: GADInterstitialAd?
-    
     var body: some View {
         ZStack {
-            // HomeView direkt und groß anzeigen
-            HomeView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(.systemBackground))
-                .ignoresSafeArea()
-            
-            
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                // iPad: HomeView direkt anzeigen, NavigationView nur optional
+                HomeView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(.systemBackground))
+                    .ignoresSafeArea()
+            } else {
+                // iPhone: NavigationView wie gewohnt
+                NavigationView {
+                    HomeView()
+                }
+                .navigationViewStyle(StackNavigationViewStyle())
+            }
         }
         .sheet(isPresented: $user.spendenClicked) {
             PremiumView()
                 .environmentObject(user)
-                .onDisappear {
-                    user.userHasBasicPremium = user.basicPremium || Products.store.isProductPurchased(Products.basicSub)
-                    user.userHasGoldPremium = user.premium ||
-                        Products.store.isProductPurchased(Products.permanent) ||
-                        Products.store.isProductPurchased(Products.goldSub)
-                }
                 .frame(maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 500 : .infinity,
                        maxHeight: UIDevice.current.userInterfaceIdiom == .pad ? 600 : .infinity)
         }
         .onAppear {
             setupUserPremium()
-            setupSaleColor()
         }
     }
+
     
     
     
@@ -55,11 +54,6 @@ struct StartView: View {
             Products.store.isProductPurchased(Products.goldSub)
     }
     
-    private func setupSaleColor() {
-        if !checkIfSaleIsActive() {
-            Color.saleColor = Color("Orange")
-        }
-    }
 }
 
 let screen = UIScreen.main.bounds
